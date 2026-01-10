@@ -11,15 +11,15 @@
         placeholder="今何してる？"
         class="memo-input"
         rows="3"
-        maxlength="280"
+        :maxlength="MAX_CHARS"
         @keydown.ctrl.enter="submitMemo"
         @keydown.meta.enter="submitMemo"
       ></textarea>
     </div>
     
     <div class="form-footer">
-      <span class="char-count" :class="{ warning: content.length > 260 }">
-        {{ content.length }} / 280
+      <span class="char-count" :class="{ warning: content.length > WARNING_THRESHOLD }">
+        {{ content.length }} / {{ MAX_CHARS }}
       </span>
       <button 
         class="submit-button"
@@ -37,6 +37,10 @@ import { ref } from 'vue'
 
 const emit = defineEmits(['submit'])
 const content = ref('')
+
+// 文字数制限の定数
+const MAX_CHARS = 280
+const WARNING_THRESHOLD = 260
 
 const submitMemo = () => {
   if (content.value.trim()) {

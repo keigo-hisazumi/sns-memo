@@ -57,6 +57,13 @@ const props = defineProps({
 
 defineEmits(['toggle-like', 'delete'])
 
+// 時間表示の定数
+const TIME_CONSTANTS = {
+  MINUTES_PER_HOUR: 60,
+  HOURS_PER_DAY: 24,
+  DAYS_PER_WEEK: 7
+}
+
 // 日時を相対的な表記に変換
 const formattedDate = computed(() => {
   const date = new Date(props.memo.createdAt)
@@ -67,9 +74,9 @@ const formattedDate = computed(() => {
   const diffDays = Math.floor(diffMs / 86400000)
 
   if (diffMins < 1) return 'たった今'
-  if (diffMins < 60) return `${diffMins}分前`
-  if (diffHours < 24) return `${diffHours}時間前`
-  if (diffDays < 7) return `${diffDays}日前`
+  if (diffMins < TIME_CONSTANTS.MINUTES_PER_HOUR) return `${diffMins}分前`
+  if (diffHours < TIME_CONSTANTS.HOURS_PER_DAY) return `${diffHours}時間前`
+  if (diffDays < TIME_CONSTANTS.DAYS_PER_WEEK) return `${diffDays}日前`
   
   return date.toLocaleDateString('ja-JP', { 
     month: 'short', 

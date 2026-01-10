@@ -40,7 +40,7 @@ export function useMemos() {
     if (!content.trim()) return
 
     const newMemo = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       content: content.trim(),
       createdAt: new Date().toISOString(),
       likes: 0,
