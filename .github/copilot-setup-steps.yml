@@ -1,0 +1,14 @@
+# GitHub Copilot Coding Agent セットアップステップ
+# このファイルは、Copilot coding agentがビルド環境で実行する初期化ステップを定義します
+
+name: Copilot Setup Steps
+
+# 日本語フォントのインストール
+# スクリーンショット撮影時に日本語が正しく表示されるようにするため
+steps:
+  - name: 日本語フォントのインストール
+    run: |
+      sudo apt-get update
+      sudo apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra
+      # フォントキャッシュを更新
+      fc-cache -fv
