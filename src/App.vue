@@ -13,8 +13,8 @@
     </header>
 
     <main class="app-main">
-      <MemoForm @submit="addMemo" />
       <SearchBar v-model="searchQuery" />
+      <MemoForm @submit="addMemo" />
       <MemoList
         :memos="memos"
         :search-query="searchQuery"
