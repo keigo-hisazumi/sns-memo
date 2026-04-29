@@ -1,5 +1,11 @@
 <template>
-  <div class="memo-card">
+  <div class="memo-card" :class="{ pinned: memo.isPinned }">
+    <div v-if="memo.isPinned" class="pin-indicator">
+      <svg viewBox="0 0 24 24" width="14" height="14">
+        <path fill="#1da1f2" d="M17 4v7l2 3H5l2-3V4h10zm-5 16c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm7-6l-2-3V4h1V2H6v2h1v7L5 14v2h6v4h2v-4h6v-2h-2z"/>
+      </svg>
+      <span>ピン留め</span>
+    </div>
     <div class="memo-header">
       <div class="user-avatar">
         <svg viewBox="0 0 24 24" width="48" height="48">
@@ -28,12 +34,26 @@
             <span>{{ memo.likes }}</span>
           </button>
           
-          <button 
+          <button
+            class="action-button pin-button"
+            :class="{ pinned: memo.isPinned }"
+            @click="$emit('toggle-pin', memo.id)"
+            :title="memo.isPinned ? 'ピン留めを解除' : 'ピン留め'"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path
+                :fill="memo.isPinned ? '#1da1f2' : 'currentColor'"
+                d="M17 4v7l2 3H5l2-3V4h10zm-5 16c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm7-6l-2-3V4h1V2H6v2h1v7L5 14v2h6v4h2v-4h6v-2h-2z"
+              />
+            </svg>
+          </button>
+
+          <button
             class="action-button delete-button"
             @click="$emit('delete', memo.id)"
           >
             <svg viewBox="0 0 24 24" width="18" height="18">
-              <path 
+              <path
                 fill="currentColor"
                 d="M16 6V4.5C16 3.12 14.88 2 13.5 2h-3C9.11 2 8 3.12 8 4.5V6H3v2h1.06l.81 11.21C4.98 20.78 6.28 22 7.86 22h8.27c1.58 0 2.88-1.22 3-2.79L19.93 8H21V6h-5zm-6-1.5c0-.28.22-.5.5-.5h3c.27 0 .5.22.5.5V6h-4V4.5zm7.13 14.57c-.04.52-.47.93-1 .93H7.86c-.53 0-.96-.41-1-.93L6.07 8h11.85l-.79 11.07z"
               />
@@ -55,7 +75,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['toggle-like', 'delete'])
+defineEmits(['toggle-like', 'delete', 'toggle-pin'])
 
 // 時間表示の定数
 const TIME_CONSTANTS = {
@@ -94,6 +114,25 @@ const formattedDate = computed(() => {
 
 .memo-card:hover {
   background-color: #f7f9fa;
+}
+
+.memo-card.pinned {
+  background-color: #f0f8ff;
+  border-left: 3px solid #1da1f2;
+}
+
+.memo-card.pinned:hover {
+  background-color: #e8f4fd;
+}
+
+.pin-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #1da1f2;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .memo-header {
@@ -172,6 +211,15 @@ const formattedDate = computed(() => {
 .like-button:hover {
   background-color: rgba(224, 36, 94, 0.1);
   color: #e0245e;
+}
+
+.pin-button.pinned {
+  color: #1da1f2;
+}
+
+.pin-button:hover {
+  background-color: rgba(29, 161, 242, 0.1);
+  color: #1da1f2;
 }
 
 .delete-button:hover {
