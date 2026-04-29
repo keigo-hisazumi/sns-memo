@@ -13,9 +13,13 @@
     </header>
 
     <main class="app-main">
-      <MemoForm @submit="addMemo" />
+      <SearchBar v-model="searchQuery" @focus="searchFocused = true" @blur="searchFocused = false" />
+      <Transition name="form-hide">
+        <MemoForm v-if="!searchFocused && !searchQuery" @submit="addMemo" />
+      </Transition>
       <MemoList
         :memos="memos"
+        :search-query="searchQuery"
         @toggle-like="toggleLike"
         @delete="deleteMemo"
         @toggle-pin="togglePin"
@@ -29,11 +33,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useMemos } from './composables/useMemos.js'
 import MemoForm from './components/MemoForm.vue'
 import MemoList from './components/MemoList.vue'
+import SearchBar from './components/SearchBar.vue'
 
-const { memos, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
+const { memos, searchQuery, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
+const searchFocused = ref(false)
 </script>
 
 <style scoped>
@@ -73,6 +80,20 @@ const { memos, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
   background-color: #f7f9fa;
   font-size: 13px;
   color: #657786;
+}
+
+.form-hide-enter-active,
+.form-hide-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease, max-height 0.25s ease;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.form-hide-enter-from,
+.form-hide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+  max-height: 0;
 }
 
 /* モバイル対応 */

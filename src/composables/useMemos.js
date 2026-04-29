@@ -14,12 +14,21 @@ export function useMemos() {
   }
 
   const memos = ref(loadMemos())
+  const searchQuery = ref('')
 
   const sortedMemos = computed(() => {
     return [...memos.value].sort((a, b) => {
       if (a.isPinned === b.isPinned) return 0
       return a.isPinned ? -1 : 1
     })
+  })
+
+  const filteredMemos = computed(() => {
+    const query = searchQuery.value.trim().toLowerCase()
+    if (!query) return sortedMemos.value
+    return sortedMemos.value.filter(memo =>
+      memo.content.toLowerCase().includes(query)
+    )
   })
 
   // LocalStorageに保存
@@ -77,7 +86,8 @@ export function useMemos() {
   }
 
   return {
-    memos: sortedMemos,
+    memos: filteredMemos,
+    searchQuery,
     addMemo,
     deleteMemo,
     toggleLike,
