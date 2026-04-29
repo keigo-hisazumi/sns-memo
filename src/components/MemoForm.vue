@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, onUnmounted } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 
 const emit = defineEmits(['submit'])
 const content = ref('')
@@ -41,49 +41,25 @@ const textareaRef = ref(null)
 
 const MAX_CHARS = 280
 const WARNING_THRESHOLD = 260
-const BASE_WIDTH = 600
-const WIDTH_PER_LINE = 60
 
-const adjustLayout = async () => {
+const adjustHeight = async () => {
   await nextTick()
   if (!textareaRef.value) return
-
-  // 高さを内容に合わせる（内部スクロールをなくす）
   textareaRef.value.style.height = 'auto'
   textareaRef.value.style.height = textareaRef.value.scrollHeight + 'px'
-
-  // 行数に応じてアプリ幅を広げる
-  const lines = content.value.split('\n').length
-  const extraLines = Math.max(0, lines - 3)
-  const app = document.getElementById('app')
-  if (app) {
-    app.style.maxWidth = extraLines > 0 ? `${BASE_WIDTH + extraLines * WIDTH_PER_LINE}px` : ''
-  }
 }
 
-watch(content, adjustLayout)
+watch(content, adjustHeight)
 
 const submitMemo = () => {
   if (content.value.trim()) {
     emit('submit', content.value)
     content.value = ''
-    // レイアウトをリセット
     if (textareaRef.value) {
       textareaRef.value.style.height = 'auto'
     }
-    const app = document.getElementById('app')
-    if (app) {
-      app.style.maxWidth = ''
-    }
   }
 }
-
-onUnmounted(() => {
-  const app = document.getElementById('app')
-  if (app) {
-    app.style.maxWidth = ''
-  }
-})
 </script>
 
 <style scoped>
