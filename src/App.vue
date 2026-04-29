@@ -14,8 +14,10 @@
 
     <main class="app-main">
       <MemoForm @submit="addMemo" />
+      <SearchBar v-model="searchQuery" />
       <MemoList
         :memos="memos"
+        :search-query="searchQuery"
         @toggle-like="toggleLike"
         @delete="deleteMemo"
         @toggle-pin="togglePin"
@@ -32,8 +34,9 @@
 import { useMemos } from './composables/useMemos.js'
 import MemoForm from './components/MemoForm.vue'
 import MemoList from './components/MemoList.vue'
+import SearchBar from './components/SearchBar.vue'
 
-const { memos, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
+const { memos, searchQuery, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
 </script>
 
 <style scoped>

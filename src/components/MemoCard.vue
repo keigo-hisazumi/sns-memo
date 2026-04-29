@@ -17,7 +17,7 @@
           <span class="username">あなた</span>
           <span class="timestamp">{{ formattedDate }}</span>
         </div>
-        <p class="memo-text">{{ memo.content }}</p>
+        <p class="memo-text" v-html="highlightedContent"></p>
         
         <div class="memo-actions">
           <button
@@ -72,10 +72,31 @@ const props = defineProps({
   memo: {
     type: Object,
     required: true
+  },
+  searchQuery: {
+    type: String,
+    default: ''
   }
 })
 
 defineEmits(['toggle-like', 'delete', 'toggle-pin'])
+
+const highlightedContent = computed(() => {
+  const escaped = props.memo.content
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+  const query = props.searchQuery.trim()
+  if (!query) return escaped
+
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return escaped.replace(
+    new RegExp(escapedQuery, 'gi'),
+    match => `<mark class="highlight">${match}</mark>`
+  )
+})
 
 // 時間表示の定数
 const TIME_CONSTANTS = {
@@ -234,5 +255,12 @@ const formattedDate = computed(() => {
 
 .action-button:active svg {
   transform: scale(0.9);
+}
+
+:deep(.highlight) {
+  background-color: #fff3cd;
+  color: #14171a;
+  border-radius: 2px;
+  padding: 0 1px;
 }
 </style>
