@@ -1,12 +1,8 @@
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
-/**
- * LocalStorageでメモを管理するコンポーザブル
- */
 export function useMemos() {
   const STORAGE_KEY = 'sns-memo-data'
-  
-  // LocalStorageからメモを読み込む
+
   const loadMemos = () => {
     try {
       const data = localStorage.getItem(STORAGE_KEY)
@@ -17,8 +13,14 @@ export function useMemos() {
     }
   }
 
-  // メモのリスト
   const memos = ref(loadMemos())
+
+  const sortedMemos = computed(() => {
+    return [...memos.value].sort((a, b) => {
+      if (a.isPinned === b.isPinned) return 0
+      return a.isPinned ? -1 : 1
+    })
+  })
 
   // LocalStorageに保存
   const saveMemos = () => {
@@ -44,7 +46,8 @@ export function useMemos() {
       content: content.trim(),
       createdAt: new Date().toISOString(),
       likes: 0,
-      isLiked: false
+      isLiked: false,
+      isPinned: false
     }
 
     memos.value.unshift(newMemo)
@@ -58,10 +61,6 @@ export function useMemos() {
     memos.value = memos.value.filter(memo => memo.id !== id)
   }
 
-  /**
-   * メモにいいねを追加/削除
-   * @param {number} id - メモのID
-   */
   const toggleLike = (id) => {
     const memo = memos.value.find(m => m.id === id)
     if (memo) {
@@ -70,10 +69,18 @@ export function useMemos() {
     }
   }
 
+  const togglePin = (id) => {
+    const memo = memos.value.find(m => m.id === id)
+    if (memo) {
+      memo.isPinned = !memo.isPinned
+    }
+  }
+
   return {
-    memos,
+    memos: sortedMemos,
     addMemo,
     deleteMemo,
-    toggleLike
+    toggleLike,
+    togglePin
   }
 }

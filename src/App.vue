@@ -14,10 +14,11 @@
 
     <main class="app-main">
       <MemoForm @submit="addMemo" />
-      <MemoList 
-        :memos="memos" 
+      <MemoList
+        :memos="memos"
         @toggle-like="toggleLike"
         @delete="deleteMemo"
+        @toggle-pin="togglePin"
       />
     </main>
 
@@ -32,7 +33,7 @@ import { useMemos } from './composables/useMemos.js'
 import MemoForm from './components/MemoForm.vue'
 import MemoList from './components/MemoList.vue'
 
-const { memos, addMemo, deleteMemo, toggleLike } = useMemos()
+const { memos, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
 </script>
 
 <style scoped>

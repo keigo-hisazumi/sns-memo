@@ -18,6 +18,7 @@
         :memo="memo"
         @toggle-like="$emit('toggle-like', $event)"
         @delete="$emit('delete', $event)"
+        @toggle-pin="$emit('toggle-pin', $event)"
       />
     </TransitionGroup>
   </div>
@@ -33,7 +34,7 @@ defineProps({
   }
 })
 
-defineEmits(['toggle-like', 'delete'])
+defineEmits(['toggle-like', 'delete', 'toggle-pin'])
 </script>
 
 <style scoped>
