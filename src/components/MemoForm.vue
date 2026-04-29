@@ -11,20 +11,19 @@
         v-model="content"
         placeholder="今何してる？"
         class="memo-input"
-        :maxlength="MAX_CHARS"
         @keydown.ctrl.enter="submitMemo"
         @keydown.meta.enter="submitMemo"
       ></textarea>
     </div>
 
     <div class="form-footer">
-      <span class="char-count" :class="{ warning: content.length > WARNING_THRESHOLD }">
+      <span class="char-count" :class="charCountClass">
         {{ content.length }} / {{ MAX_CHARS }}
       </span>
       <button
         class="submit-button"
         @click="submitMemo"
-        :disabled="!content.trim()"
+        :disabled="!content.trim() || content.length > MAX_CHARS"
       >
         投稿
       </button>
@@ -33,14 +32,21 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 const emit = defineEmits(['submit'])
 const content = ref('')
 const textareaRef = ref(null)
 
 const MAX_CHARS = 280
-const WARNING_THRESHOLD = 260
+const YELLOW_THRESHOLD = 260
+
+const charCountClass = computed(() => {
+  const len = content.value.length
+  if (len >= MAX_CHARS) return 'over'
+  if (len >= YELLOW_THRESHOLD) return 'caution'
+  return ''
+})
 
 const adjustHeight = async () => {
   await nextTick()
@@ -52,7 +58,7 @@ const adjustHeight = async () => {
 watch(content, adjustHeight)
 
 const submitMemo = () => {
-  if (content.value.trim()) {
+  if (content.value.trim() && content.value.length <= MAX_CHARS) {
     emit('submit', content.value)
     content.value = ''
     if (textareaRef.value) {
@@ -111,7 +117,12 @@ const submitMemo = () => {
   color: #657786;
 }
 
-.char-count.warning {
+.char-count.caution {
+  color: #f4900c;
+  font-weight: 600;
+}
+
+.char-count.over {
   color: #e0245e;
   font-weight: 600;
 }
