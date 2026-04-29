@@ -13,6 +13,8 @@
         type="text"
         placeholder="メモを検索..."
         @keydown.esc="clear"
+        @focus="emit('focus')"
+        @blur="emit('blur')"
       />
       <button v-if="query" class="clear-button" @click="clear" title="クリア">
         <svg viewBox="0 0 24 24" width="16" height="16">
@@ -36,7 +38,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'focus', 'blur'])
 
 const query = computed({
   get: () => props.modelValue,
