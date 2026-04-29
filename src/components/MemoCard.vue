@@ -109,7 +109,8 @@ const formattedDate = computed(() => {
 .memo-card {
   padding: 16px;
   border-bottom: 1px solid #e1e8ed;
-  transition: background-color 0.2s;
+  border-left: 3px solid transparent;
+  transition: background-color 0.2s, border-left-color 0.2s;
 }
 
 .memo-card:hover {
@@ -118,7 +119,7 @@ const formattedDate = computed(() => {
 
 .memo-card.pinned {
   background-color: #f0f8ff;
-  border-left: 3px solid #1da1f2;
+  border-left-color: #1da1f2;
 }
 
 .memo-card.pinned:hover {
