@@ -7,21 +7,21 @@
         </svg>
       </div>
       <textarea
+        ref="textareaRef"
         v-model="content"
         placeholder="今何してる？"
         class="memo-input"
-        rows="3"
         :maxlength="MAX_CHARS"
         @keydown.ctrl.enter="submitMemo"
         @keydown.meta.enter="submitMemo"
       ></textarea>
     </div>
-    
+
     <div class="form-footer">
       <span class="char-count" :class="{ warning: content.length > WARNING_THRESHOLD }">
         {{ content.length }} / {{ MAX_CHARS }}
       </span>
-      <button 
+      <button
         class="submit-button"
         @click="submitMemo"
         :disabled="!content.trim()"
@@ -33,21 +33,57 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, nextTick, onUnmounted } from 'vue'
 
 const emit = defineEmits(['submit'])
 const content = ref('')
+const textareaRef = ref(null)
 
-// 文字数制限の定数
 const MAX_CHARS = 280
 const WARNING_THRESHOLD = 260
+const BASE_WIDTH = 600
+const WIDTH_PER_LINE = 60
+
+const adjustLayout = async () => {
+  await nextTick()
+  if (!textareaRef.value) return
+
+  // 高さを内容に合わせる（内部スクロールをなくす）
+  textareaRef.value.style.height = 'auto'
+  textareaRef.value.style.height = textareaRef.value.scrollHeight + 'px'
+
+  // 行数に応じてアプリ幅を広げる
+  const lines = content.value.split('\n').length
+  const extraLines = Math.max(0, lines - 3)
+  const app = document.getElementById('app')
+  if (app) {
+    app.style.maxWidth = extraLines > 0 ? `${BASE_WIDTH + extraLines * WIDTH_PER_LINE}px` : ''
+  }
+}
+
+watch(content, adjustLayout)
 
 const submitMemo = () => {
   if (content.value.trim()) {
     emit('submit', content.value)
     content.value = ''
+    // レイアウトをリセット
+    if (textareaRef.value) {
+      textareaRef.value.style.height = 'auto'
+    }
+    const app = document.getElementById('app')
+    if (app) {
+      app.style.maxWidth = ''
+    }
   }
 }
+
+onUnmounted(() => {
+  const app = document.getElementById('app')
+  if (app) {
+    app.style.maxWidth = ''
+  }
+})
 </script>
 
 <style scoped>
@@ -79,6 +115,7 @@ const submitMemo = () => {
   font-size: 16px;
   padding: 8px;
   min-height: 80px;
+  overflow: hidden;
 }
 
 .memo-input:focus {
