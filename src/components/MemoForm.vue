@@ -1,11 +1,7 @@
 <template>
   <div class="memo-form">
     <div class="form-header">
-      <div class="user-avatar">
-        <svg viewBox="0 0 24 24" width="40" height="40">
-          <path fill="#1da1f2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>
-      </div>
+      <UserAvatar :name="profile.name" :color="profile.avatarColor" :size="40" />
       <textarea
         ref="textareaRef"
         v-model="content"
@@ -33,8 +29,11 @@
 
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
+import { useProfile } from '../composables/useProfile.js'
+import UserAvatar from './UserAvatar.vue'
 
 const emit = defineEmits(['submit'])
+const { profile } = useProfile()
 const content = ref('')
 const textareaRef = ref(null)
 
@@ -79,15 +78,6 @@ const submitMemo = () => {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
-}
-
-.user-avatar {
-  flex-shrink: 0;
-}
-
-.user-avatar svg {
-  border-radius: 50%;
-  background-color: #f7f9fa;
 }
 
 .memo-input {

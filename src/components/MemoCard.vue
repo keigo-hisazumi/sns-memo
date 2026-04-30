@@ -7,18 +7,15 @@
       <span>ピン留め</span>
     </div>
     <div class="memo-header">
-      <div class="user-avatar">
-        <svg viewBox="0 0 24 24" width="48" height="48">
-          <path fill="#1da1f2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>
-      </div>
+      <UserAvatar :name="profile.name" :color="profile.avatarColor" :size="48" />
       <div class="memo-content">
         <div class="memo-info">
-          <span class="username">あなた</span>
+          <span class="username">{{ profile.name }}</span>
+          <span class="user-id">@{{ profile.userId }}</span>
           <span class="timestamp">{{ formattedDate }}</span>
         </div>
         <p class="memo-text" v-html="highlightedContent"></p>
-        
+
         <div class="memo-actions">
           <button
             class="action-button pin-button"
@@ -67,6 +64,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useProfile } from '../composables/useProfile.js'
+import UserAvatar from './UserAvatar.vue'
 
 const props = defineProps({
   memo: {
@@ -80,6 +79,8 @@ const props = defineProps({
 })
 
 defineEmits(['toggle-like', 'delete', 'toggle-pin'])
+
+const { profile } = useProfile()
 
 const highlightedContent = computed(() => {
   const escaped = props.memo.content
@@ -98,14 +99,12 @@ const highlightedContent = computed(() => {
   )
 })
 
-// 時間表示の定数
 const TIME_CONSTANTS = {
   MINUTES_PER_HOUR: 60,
   HOURS_PER_DAY: 24,
   DAYS_PER_WEEK: 7
 }
 
-// 日時を相対的な表記に変換
 const formattedDate = computed(() => {
   const date = new Date(props.memo.createdAt)
   const now = new Date()
@@ -118,10 +117,10 @@ const formattedDate = computed(() => {
   if (diffMins < TIME_CONSTANTS.MINUTES_PER_HOUR) return `${diffMins}分前`
   if (diffHours < TIME_CONSTANTS.HOURS_PER_DAY) return `${diffHours}時間前`
   if (diffDays < TIME_CONSTANTS.DAYS_PER_WEEK) return `${diffDays}日前`
-  
-  return date.toLocaleDateString('ja-JP', { 
-    month: 'short', 
-    day: 'numeric' 
+
+  return date.toLocaleDateString('ja-JP', {
+    month: 'short',
+    day: 'numeric'
   })
 })
 </script>
@@ -162,15 +161,6 @@ const formattedDate = computed(() => {
   gap: 12px;
 }
 
-.user-avatar {
-  flex-shrink: 0;
-}
-
-.user-avatar svg {
-  border-radius: 50%;
-  background-color: #f7f9fa;
-}
-
 .memo-content {
   flex: 1;
   min-width: 0;
@@ -179,8 +169,9 @@ const formattedDate = computed(() => {
 .memo-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 4px;
+  flex-wrap: wrap;
 }
 
 .username {
@@ -189,9 +180,19 @@ const formattedDate = computed(() => {
   color: #14171a;
 }
 
+.user-id {
+  font-size: 13px;
+  color: #657786;
+}
+
 .timestamp {
   font-size: 13px;
   color: #657786;
+}
+
+.timestamp::before {
+  content: '·';
+  margin-right: 6px;
 }
 
 .memo-text {
