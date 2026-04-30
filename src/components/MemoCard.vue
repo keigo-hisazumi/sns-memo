@@ -457,7 +457,7 @@ const submitReply = () => {
 
 /* Replies container */
 .replies-container {
-  margin-left: -16px;
+  margin-left: -19px;
   margin-right: -16px;
 }
 </style>
