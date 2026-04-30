@@ -1,298 +1,155 @@
 <template>
-  <div class="profile-body">
-    <div class="avatar-section">
-      <UserAvatar :name="form.name || '?'" :color="form.avatarColor" :size="80" />
-      <div class="color-picker">
-        <p class="color-label">アイコンカラー</p>
-        <div class="color-swatches">
-          <button
-            v-for="color in AVATAR_COLORS"
-            :key="color"
-            class="color-swatch"
-            :class="{ selected: form.avatarColor === color }"
-            :style="{ backgroundColor: color }"
-            :title="color"
-            @click="form.avatarColor = color"
-          />
-        </div>
+  <div class="profile-page">
+    <div class="profile-header">
+      <div class="profile-top">
+        <UserAvatar :name="profile.name" :color="profile.avatarColor" :size="72" />
+        <button class="edit-button" @click="editOpen = true">編集</button>
+      </div>
+      <div class="profile-info">
+        <span class="profile-name">{{ profile.name }}</span>
+        <span class="profile-id">@{{ profile.userId }}</span>
+        <p v-if="profile.bio" class="profile-bio">{{ profile.bio }}</p>
+      </div>
+      <div class="profile-stats">
+        <span class="stat"><strong>{{ allMemos.length }}</strong> 投稿</span>
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="field-label">名前 <span class="required">*</span></label>
-      <input
-        v-model="form.name"
-        type="text"
-        maxlength="50"
-        placeholder="あなたの名前"
-        class="field-input"
+    <div class="posts-header">投稿</div>
+
+    <div v-if="allMemos.length === 0" class="empty-state">
+      <p class="empty-message">まだ投稿がありません</p>
+      <p class="empty-hint">ホーム画面から最初のメモを投稿してみましょう！</p>
+    </div>
+    <template v-else>
+      <MemoCard
+        v-for="memo in allMemos"
+        :key="memo.id"
+        :memo="memo"
+        @toggle-like="toggleLike"
+        @delete="deleteMemo"
+        @toggle-pin="togglePin"
       />
-      <span class="field-count" :class="{ warn: form.name.length >= 45 }">
-        {{ form.name.length }} / 50
-      </span>
-    </div>
+    </template>
 
-    <div class="form-group">
-      <label class="field-label">ユーザーID</label>
-      <div class="id-input-wrap">
-        <span class="at-sign">@</span>
-        <input
-          v-model="form.userId"
-          type="text"
-          maxlength="20"
-          placeholder="user_id"
-          class="field-input id-input"
-          @input="sanitizeUserId"
-        />
-      </div>
-      <span class="field-count" :class="{ warn: form.userId.length >= 18 }">
-        {{ form.userId.length }} / 20
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label class="field-label">自己紹介</label>
-      <textarea
-        v-model="form.bio"
-        maxlength="160"
-        placeholder="自己紹介を書いてください"
-        class="field-input bio-input"
-        rows="4"
-      />
-      <span class="field-count" :class="{ warn: form.bio.length >= 140 }">
-        {{ form.bio.length }} / 160
-      </span>
-    </div>
-
-    <div class="profile-preview">
-      <p class="preview-label">プレビュー</p>
-      <div class="preview-card">
-        <UserAvatar :name="form.name || '?'" :color="form.avatarColor" :size="56" />
-        <div class="preview-info">
-          <span class="preview-name">{{ form.name || '（名前未設定）' }}</span>
-          <span class="preview-id">@{{ form.userId || 'user' }}</span>
-          <p v-if="form.bio" class="preview-bio">{{ form.bio }}</p>
-        </div>
-      </div>
-    </div>
+    <ProfileEditModal v-if="editOpen" @close="editOpen = false" />
   </div>
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
+import { ref } from 'vue'
 import { useProfile } from '../composables/useProfile.js'
+import { useMemos } from '../composables/useMemos.js'
 import UserAvatar from './UserAvatar.vue'
+import MemoCard from './MemoCard.vue'
+import ProfileEditModal from './ProfileEditModal.vue'
 
-const emit = defineEmits(['saved'])
+const { profile } = useProfile()
+const { allMemos, deleteMemo, toggleLike, togglePin } = useMemos()
 
-const { profile, updateProfile } = useProfile()
-
-const AVATAR_COLORS = [
-  '#1da1f2', '#e0245e', '#17bf63', '#f4900c',
-  '#794bc4', '#ff7043', '#00b8d4', '#546e7a'
-]
-
-const form = reactive({
-  name: profile.value.name,
-  userId: profile.value.userId,
-  bio: profile.value.bio,
-  avatarColor: profile.value.avatarColor
-})
-
-const sanitizeUserId = () => {
-  form.userId = form.userId.replace(/[^a-zA-Z0-9_]/g, '')
-}
-
-const canSave = computed(() => form.name.trim().length > 0)
-
-const save = () => {
-  if (!canSave.value) return
-  updateProfile({
-    name: form.name.trim(),
-    userId: form.userId.trim() || 'user',
-    bio: form.bio.trim(),
-    avatarColor: form.avatarColor
-  })
-  emit('saved')
-}
-
-defineExpose({ save, canSave })
+const editOpen = ref(false)
 </script>
 
 <style scoped>
-.profile-body {
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.profile-page {
+  background-color: #fff;
 }
 
-.avatar-section {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.color-picker {
-  flex: 1;
-}
-
-.color-label {
-  font-size: 13px;
-  color: #657786;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.color-swatches {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.color-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  padding: 0;
-  transition: transform 0.15s, border-color 0.15s;
-}
-
-.color-swatch:hover {
-  transform: scale(1.15);
-  opacity: 1;
-}
-
-.color-swatch.selected {
-  border-color: #14171a;
-  transform: scale(1.1);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: #14171a;
-}
-
-.required {
-  color: #e0245e;
-}
-
-.field-input {
-  width: 100%;
-  border: 1px solid #e1e8ed;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 15px;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
-
-.field-input:focus {
-  outline: none;
-  border-color: #1da1f2;
-}
-
-.bio-input {
-  resize: vertical;
-  min-height: 90px;
-}
-
-.id-input-wrap {
-  display: flex;
-  align-items: center;
-  border: 1px solid #e1e8ed;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: border-color 0.2s;
-}
-
-.id-input-wrap:focus-within {
-  border-color: #1da1f2;
-}
-
-.at-sign {
-  padding: 10px 8px 10px 12px;
-  color: #657786;
-  font-size: 15px;
-  background-color: #f7f9fa;
-  border-right: 1px solid #e1e8ed;
-}
-
-.id-input {
-  border: none;
-  border-radius: 0;
-  flex: 1;
-}
-
-.id-input:focus {
-  border: none;
-  outline: none;
-}
-
-.field-count {
-  font-size: 12px;
-  color: #657786;
-  text-align: right;
-}
-
-.field-count.warn {
-  color: #f4900c;
-  font-weight: 600;
-}
-
-.profile-preview {
-  border: 1px solid #e1e8ed;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.preview-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #657786;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 10px 16px;
-  background-color: #f7f9fa;
+.profile-header {
+  padding: 20px 16px 0;
   border-bottom: 1px solid #e1e8ed;
 }
 
-.preview-card {
+.profile-top {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding: 16px;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
-.preview-info {
+.edit-button {
+  background: none;
+  border: 1px solid #cfd9de;
+  color: #14171a;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+.edit-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  opacity: 1;
+}
+
+.profile-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-bottom: 12px;
 }
 
-.preview-name {
+.profile-name {
+  font-size: 20px;
   font-weight: 700;
-  font-size: 16px;
   color: #14171a;
 }
 
-.preview-id {
+.profile-id {
+  font-size: 15px;
+  color: #657786;
+}
+
+.profile-bio {
+  font-size: 15px;
+  color: #14171a;
+  margin-top: 8px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 20px;
+  padding: 12px 0;
+}
+
+.stat {
   font-size: 14px;
   color: #657786;
 }
 
-.preview-bio {
-  font-size: 14px;
+.stat strong {
   color: #14171a;
-  margin-top: 6px;
-  white-space: pre-wrap;
+}
+
+.posts-header {
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #14171a;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-message {
+  font-size: 20px;
+  font-weight: 700;
+  color: #14171a;
+  margin-bottom: 8px;
+}
+
+.empty-hint {
+  font-size: 14px;
+  color: #657786;
 }
 </style>
