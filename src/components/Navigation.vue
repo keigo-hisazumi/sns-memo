@@ -143,9 +143,7 @@ const navItems = [
   .nav-sidebar {
     display: flex;
     flex-direction: column;
-    position: sticky;
-    top: 53px;
-    height: calc(100vh - 53px);
+    height: 100%;
     width: 240px;
     padding: 16px 12px;
     flex-shrink: 0;
