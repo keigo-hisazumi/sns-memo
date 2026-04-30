@@ -27,7 +27,6 @@
         v-for="memo in memos"
         :key="memo.id"
         :memo="memo"
-        :search-query="searchQuery"
         @toggle-like="$emit('toggle-like', $event)"
         @delete="$emit('delete', $event)"
         @toggle-pin="$emit('toggle-pin', $event)"

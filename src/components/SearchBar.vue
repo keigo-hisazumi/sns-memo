@@ -11,7 +11,7 @@
         v-model="query"
         class="search-input"
         type="text"
-        placeholder="メモを検索..."
+        placeholder="検索..."
         @keydown.esc="clear"
         @focus="emit('focus')"
         @blur="emit('blur')"
@@ -52,6 +52,10 @@ const clear = () => {
 
 <style scoped>
 .search-bar {
+  position: sticky;
+  top: 53px;
+  z-index: 100;
+  background-color: #fff;
   padding: 8px 16px 12px;
   border-bottom: 1px solid #e1e8ed;
 }
