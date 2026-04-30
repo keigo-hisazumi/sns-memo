@@ -28,7 +28,7 @@
         <template v-else>
           <MemoForm @submit="addMemo" />
           <MemoList
-            :memos="memos"
+            :memos="allMemos"
             :search-query="''"
             @toggle-like="toggleLike"
             @delete="deleteMemo"
@@ -50,7 +50,7 @@ import MemoList from './components/MemoList.vue'
 import SearchBar from './components/SearchBar.vue'
 import ProfilePage from './components/ProfilePage.vue'
 
-const { memos, searchQuery, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
+const { memos, allMemos, searchQuery, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
 const currentPage = ref('home')
 </script>
 

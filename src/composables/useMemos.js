@@ -24,7 +24,7 @@ const sortedMemos = computed(() => {
 
 const filteredMemos = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
-  if (!query) return sortedMemos.value
+  if (!query) return []
   return sortedMemos.value.filter(memo =>
     memo.content.toLowerCase().includes(query)
   )
