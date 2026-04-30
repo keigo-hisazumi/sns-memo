@@ -9,7 +9,7 @@
 
     <div class="memo-header">
       <div class="avatar-col">
-        <UserAvatar :name="profile.name" :color="profile.avatarColor" :size="depth > 0 ? 36 : 48" />
+        <UserAvatar :name="profile.name" :color="profile.avatarColor" :size="48" />
         <div v-if="replies.length > 0 || showReplyForm" class="thread-line"></div>
       </div>
 
@@ -457,6 +457,7 @@ const submitReply = () => {
 
 /* Replies container */
 .replies-container {
-  border-top: 1px solid #e1e8ed;
+  margin-left: -16px;
+  margin-right: -16px;
 }
 </style>
