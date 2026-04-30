@@ -97,7 +97,7 @@ const currentPage = ref('home')
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 53px);
-  padding-bottom: 60px;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
 }
 
 .app-main {
