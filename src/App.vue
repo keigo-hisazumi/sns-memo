@@ -37,9 +37,6 @@
         </template>
       </main>
 
-      <footer class="app-footer">
-        <p>&copy; 2026 SNS Memo. All rights reserved.</p>
-      </footer>
     </div>
   </div>
 </template>
@@ -94,15 +91,6 @@ const currentPage = ref('home')
 
 .app-main {
   flex: 1;
-}
-
-.app-footer {
-  padding: 20px;
-  text-align: center;
-  border-top: 1px solid #e1e8ed;
-  background-color: #f7f9fa;
-  font-size: 13px;
-  color: #657786;
 }
 
 @media (min-width: 768px) {
