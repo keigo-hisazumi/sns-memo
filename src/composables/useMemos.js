@@ -15,17 +15,19 @@ const loadMemos = () => {
 const memos = ref(loadMemos())
 const searchQuery = ref('')
 
-const sortedMemos = computed(() => {
-  return [...memos.value].sort((a, b) => {
-    if (a.isPinned === b.isPinned) return 0
-    return a.isPinned ? -1 : 1
-  })
+const topLevelMemos = computed(() => {
+  return memos.value
+    .filter(m => !m.parentId)
+    .sort((a, b) => {
+      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
+      return 0
+    })
 })
 
 const filteredMemos = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
   if (!query) return []
-  return sortedMemos.value.filter(memo =>
+  return memos.value.filter(memo =>
     memo.content.toLowerCase().includes(query)
   )
 })
@@ -40,7 +42,7 @@ const saveMemos = () => {
 
 watch(memos, saveMemos, { deep: true })
 
-const addMemo = (content) => {
+const addMemo = (content, parentId = null) => {
   if (!content.trim()) return
 
   const newMemo = {
@@ -49,14 +51,21 @@ const addMemo = (content) => {
     createdAt: new Date().toISOString(),
     likes: 0,
     isLiked: false,
-    isPinned: false
+    isPinned: false,
+    parentId: parentId || null
   }
 
   memos.value.unshift(newMemo)
 }
 
 const deleteMemo = (id) => {
-  memos.value = memos.value.filter(memo => memo.id !== id)
+  const getChildIds = (parentId) => {
+    return memos.value
+      .filter(m => m.parentId === parentId)
+      .flatMap(c => [c.id, ...getChildIds(c.id)])
+  }
+  const idsToDelete = new Set([id, ...getChildIds(id)])
+  memos.value = memos.value.filter(m => !idsToDelete.has(m.id))
 }
 
 const toggleLike = (id) => {
@@ -74,14 +83,21 @@ const togglePin = (id) => {
   }
 }
 
+const getReplies = (parentId) => {
+  return memos.value
+    .filter(m => m.parentId === parentId)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+}
+
 export function useMemos() {
   return {
     memos: filteredMemos,
-    allMemos: sortedMemos,
+    allMemos: topLevelMemos,
     searchQuery,
     addMemo,
     deleteMemo,
     toggleLike,
-    togglePin
+    togglePin,
+    getReplies
   }
 }

@@ -26,9 +26,6 @@
         v-for="memo in allMemos"
         :key="memo.id"
         :memo="memo"
-        @toggle-like="toggleLike"
-        @delete="deleteMemo"
-        @toggle-pin="togglePin"
       />
     </template>
 
@@ -45,7 +42,7 @@ import MemoCard from './MemoCard.vue'
 import ProfileEditModal from './ProfileEditModal.vue'
 
 const { profile } = useProfile()
-const { allMemos, deleteMemo, toggleLike, togglePin } = useMemos()
+const { allMemos } = useMemos()
 
 const editOpen = ref(false)
 </script>

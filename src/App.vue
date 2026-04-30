@@ -31,9 +31,6 @@
             v-else
             :memos="memos"
             :search-query="searchQuery"
-            @toggle-like="toggleLike"
-            @delete="deleteMemo"
-            @toggle-pin="togglePin"
           />
         </template>
         <template v-else>
@@ -41,9 +38,6 @@
           <MemoList
             :memos="allMemos"
             :search-query="''"
-            @toggle-like="toggleLike"
-            @delete="deleteMemo"
-            @toggle-pin="togglePin"
           />
         </template>
       </main>
@@ -61,7 +55,7 @@ import MemoList from './components/MemoList.vue'
 import SearchBar from './components/SearchBar.vue'
 import ProfilePage from './components/ProfilePage.vue'
 
-const { memos, allMemos, searchQuery, addMemo, deleteMemo, toggleLike, togglePin } = useMemos()
+const { memos, allMemos, searchQuery, addMemo } = useMemos()
 const currentPage = ref('home')
 </script>
 
