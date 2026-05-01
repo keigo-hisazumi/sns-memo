@@ -125,25 +125,10 @@ const currentPage = ref('home')
 }
 
 @media (min-width: 768px) {
-  .app-header {
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .app-wrapper {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
-
   .app-container {
     padding-bottom: 0;
     max-width: 600px;
     border-right: 1px solid #e1e8ed;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
-    height: 100%;
-    min-height: 0;
   }
 }
 </style>
