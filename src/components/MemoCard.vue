@@ -24,58 +24,66 @@
           </div>
           <p class="memo-text">{{ item.content }}</p>
           <div class="memo-actions">
-            <button
-              class="action-button reply-button"
-              :class="{ active: replyingToId === item.id }"
-              @click="toggleReplyForm(item.id)"
-              title="リプライ"
-            >
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path fill="currentColor" d="M14.046 2.242l-4.148-.01h-.002c-4.374 0-7.8 3.427-7.8 7.802 0 4.098 3.186 7.206 7.465 7.37v3.828c0 .108.044.286.12.403.142.225.384.347.632.347.138 0 .277-.038.402-.118.264-.168 6.473-4.14 8.088-5.506 1.902-1.61 3.04-3.97 3.043-6.312v-.017c-.006-4.367-3.43-7.787-7.8-7.788zm3.787 12.972c-1.134.96-4.862 3.405-6.772 4.643V16.67c0-.414-.335-.75-.75-.75h-.396c-3.66 0-6.318-2.476-6.318-5.886 0-3.534 2.768-6.302 6.3-6.302l4.147.01h.002c3.532 0 6.3 2.766 6.302 6.296-.003 1.91-.942 3.844-2.515 5.176z"/>
-              </svg>
-              <span v-if="replyCountFor(item.id) > 0">{{ replyCountFor(item.id) }}</span>
-            </button>
+            <div class="action-cell">
+              <button
+                class="action-button reply-button"
+                :class="{ active: replyingToId === item.id }"
+                @click="toggleReplyForm(item.id)"
+                title="リプライ"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path fill="currentColor" d="M14.046 2.242l-4.148-.01h-.002c-4.374 0-7.8 3.427-7.8 7.802 0 4.098 3.186 7.206 7.465 7.37v3.828c0 .108.044.286.12.403.142.225.384.347.632.347.138 0 .277-.038.402-.118.264-.168 6.473-4.14 8.088-5.506 1.902-1.61 3.04-3.97 3.043-6.312v-.017c-.006-4.367-3.43-7.787-7.8-7.788zm3.787 12.972c-1.134.96-4.862 3.405-6.772 4.643V16.67c0-.414-.335-.75-.75-.75h-.396c-3.66 0-6.318-2.476-6.318-5.886 0-3.534 2.768-6.302 6.3-6.302l4.147.01h.002c3.532 0 6.3 2.766 6.302 6.296-.003 1.91-.942 3.844-2.515 5.176z"/>
+                </svg>
+                <span class="action-count">{{ replyCountFor(item.id) > 0 ? replyCountFor(item.id) : '' }}</span>
+              </button>
+            </div>
 
-            <button
-              class="action-button like-button"
-              :class="{ liked: item.isLiked }"
-              @click="toggleLike(item.id)"
-            >
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path
-                  :fill="item.isLiked ? '#e0245e' : 'currentColor'"
-                  d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12z"
-                />
-              </svg>
-              <span>{{ item.likes }}</span>
-            </button>
+            <div class="action-cell">
+              <button
+                class="action-button like-button"
+                :class="{ liked: item.isLiked }"
+                @click="toggleLike(item.id)"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    :fill="item.isLiked ? '#e0245e' : 'currentColor'"
+                    d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12z"
+                  />
+                </svg>
+                <span class="action-count">{{ item.likes }}</span>
+              </button>
+            </div>
 
-            <button
-              v-if="index === 0"
-              class="action-button pin-button"
-              :class="{ pinned: item.isPinned }"
-              @click="togglePin(item.id)"
-              :title="item.isPinned ? 'ピン留めを解除' : 'ピン留め'"
-            >
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path
-                  :fill="item.isPinned ? '#1da1f2' : 'currentColor'"
-                  d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"
-                />
-              </svg>
-            </button>
+            <div class="action-cell">
+              <button
+                v-if="index === 0"
+                class="action-button pin-button"
+                :class="{ pinned: item.isPinned }"
+                @click="togglePin(item.id)"
+                :title="item.isPinned ? 'ピン留めを解除' : 'ピン留め'"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    :fill="item.isPinned ? '#1da1f2' : 'currentColor'"
+                    d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"
+                  />
+                </svg>
+              </button>
+            </div>
 
-            <button
-              class="action-button delete-button"
-              @click="deleteMemo(item.id)"
-            >
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path
-                  fill="currentColor"
-                  d="M16 6V4.5C16 3.12 14.88 2 13.5 2h-3C9.11 2 8 3.12 8 4.5V6H3v2h1.06l.81 11.21C4.98 20.78 6.28 22 7.86 22h8.27c1.58 0 2.88-1.22 3-2.79L19.93 8H21V6h-5zm-6-1.5c0-.28.22-.5.5-.5h3c.27 0 .5.22.5.5V6h-4V4.5zm7.13 14.57c-.04.52-.47.93-1 .93H7.86c-.53 0-.96-.41-1-.93L6.07 8h11.85l-.79 11.07z"
-                />
-              </svg>
-            </button>
+            <div class="action-cell">
+              <button
+                class="action-button delete-button"
+                @click="deleteMemo(item.id)"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    fill="currentColor"
+                    d="M16 6V4.5C16 3.12 14.88 2 13.5 2h-3C9.11 2 8 3.12 8 4.5V6H3v2h1.06l.81 11.21C4.98 20.78 6.28 22 7.86 22h8.27c1.58 0 2.88-1.22 3-2.79L19.93 8H21V6h-5zm-6-1.5c0-.28.22-.5.5-.5h3c.27 0 .5.22.5.5V6h-4V4.5zm7.13 14.57c-.04.52-.47.93-1 .93H7.86c-.53 0-.96-.41-1-.93L6.07 8h11.85l-.79 11.07z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -293,8 +301,13 @@ const submitReply = () => {
 
 .memo-actions {
   display: flex;
-  gap: 16px;
   margin-top: 8px;
+}
+
+.action-cell {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .action-button {
@@ -307,6 +320,12 @@ const submitReply = () => {
   border-radius: 4px;
   font-size: 13px;
   transition: all 0.2s;
+}
+
+.action-count {
+  display: inline-block;
+  min-width: 1.5em;
+  text-align: left;
 }
 
 .action-button:hover {
