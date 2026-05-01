@@ -13,9 +13,9 @@
         <span class="nav-label">{{ item.label }}</span>
       </li>
     </ul>
-    <button class="theme-toggle-button" @click="toggleDarkMode" :title="isDarkMode ? 'ライトモード' : 'ダークモード'">
+    <button class="theme-toggle-button" @click="toggleDarkMode" :title="isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'">
       <component :is="isDarkMode ? SunIcon : MoonIcon" class="nav-icon" />
-      <span class="nav-label">{{ isDarkMode ? 'ライト' : 'ダーク' }}</span>
+      <span class="nav-label">{{ isDarkMode ? 'ダーク' : 'ライト' }}</span>
     </button>
   </nav>
 
@@ -32,9 +32,9 @@
         <component :is="item.icon" class="nav-icon" />
         <span class="nav-bottom-label">{{ item.label }}</span>
       </li>
-      <li class="nav-bottom-item" @click="toggleDarkMode" :title="isDarkMode ? 'ライトモード' : 'ダークモード'">
+      <li class="nav-bottom-item" @click="toggleDarkMode" :title="isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'">
         <component :is="isDarkMode ? SunIcon : MoonIcon" class="nav-icon" />
-        <span class="nav-bottom-label">{{ isDarkMode ? 'ライト' : 'ダーク' }}</span>
+        <span class="nav-bottom-label">{{ isDarkMode ? 'ダーク' : 'ライト' }}</span>
       </li>
     </ul>
   </nav>
