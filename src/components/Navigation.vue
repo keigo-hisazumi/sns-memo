@@ -145,6 +145,7 @@ const navItems = [
     flex-direction: column;
     position: sticky;
     top: 53px;
+    z-index: 10;
     height: calc(100vh - 53px);
     width: 240px;
     padding: 16px 12px;
@@ -176,7 +177,7 @@ const navItems = [
     cursor: pointer;
     color: #14171a;
     font-size: 17px;
-    font-weight: 500;
+    font-weight: 700;
     transition: background-color 0.2s, color 0.2s;
   }
 
@@ -187,7 +188,6 @@ const navItems = [
 
   .nav-item.active {
     color: #1da1f2;
-    font-weight: 700;
   }
 
   .nav-item.active .nav-icon {
