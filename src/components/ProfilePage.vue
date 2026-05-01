@@ -49,12 +49,12 @@ const editOpen = ref(false)
 
 <style scoped>
 .profile-page {
-  background-color: #fff;
+  background-color: var(--bg-primary);
 }
 
 .profile-header {
   padding: 20px 16px 0;
-  border-bottom: 1px solid #e1e8ed;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .profile-top {
@@ -66,8 +66,8 @@ const editOpen = ref(false)
 
 .edit-button {
   background: none;
-  border: 1px solid #cfd9de;
-  color: #14171a;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   padding: 6px 18px;
   font-size: 14px;
   font-weight: 700;
@@ -80,6 +80,10 @@ const editOpen = ref(false)
   opacity: 1;
 }
 
+html.dark-mode .edit-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .profile-info {
   display: flex;
   flex-direction: column;
@@ -90,17 +94,17 @@ const editOpen = ref(false)
 .profile-name {
   font-size: 20px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .profile-id {
   font-size: 15px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .profile-bio {
   font-size: 15px;
-  color: #14171a;
+  color: var(--text-primary);
   margin-top: 8px;
   white-space: pre-wrap;
   line-height: 1.5;
@@ -114,19 +118,19 @@ const editOpen = ref(false)
 
 .stat {
   font-size: 14px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .stat strong {
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .posts-header {
   padding: 12px 16px;
   font-size: 15px;
   font-weight: 700;
-  color: #14171a;
-  border-bottom: 1px solid #e1e8ed;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .empty-state {
@@ -141,12 +145,12 @@ const editOpen = ref(false)
 .empty-message {
   font-size: 20px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .empty-hint {
   font-size: 14px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 </style>

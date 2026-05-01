@@ -206,22 +206,22 @@ const submitReply = () => {
 
 <style scoped>
 .memo-card {
-  border-bottom: 1px solid #e1e8ed;
+  border-bottom: 1px solid var(--border-color);
   border-left: 3px solid transparent;
   transition: background-color 0.2s, border-left-color 0.2s;
 }
 
 .memo-card:hover {
-  background-color: #f7f9fa;
+  background-color: var(--card-hover);
 }
 
 .memo-card.pinned {
-  background-color: #f0f8ff;
+  background-color: var(--pinned-bg);
   border-left-color: #1da1f2;
 }
 
 .memo-card.pinned:hover {
-  background-color: #e8f4fd;
+  background-color: var(--bg-tertiary);
 }
 
 .pin-indicator {
@@ -251,7 +251,7 @@ const submitReply = () => {
   width: 2px;
   flex: 1;
   min-height: 12px;
-  background-color: #cfd9de;
+  background-color: var(--thread-line);
   margin-top: 4px;
 }
 
@@ -272,17 +272,17 @@ const submitReply = () => {
 .username {
   font-weight: 700;
   font-size: 15px;
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .user-id {
   font-size: 13px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .timestamp {
   font-size: 13px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .timestamp::before {
@@ -293,7 +293,7 @@ const submitReply = () => {
 .memo-text {
   font-size: 15px;
   line-height: 1.5;
-  color: #14171a;
+  color: var(--text-primary);
   word-wrap: break-word;
   white-space: pre-wrap;
   margin-bottom: 12px;
@@ -315,11 +315,12 @@ const submitReply = () => {
   align-items: center;
   gap: 4px;
   background: none;
-  color: #657786;
+  color: var(--text-secondary);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
   transition: all 0.2s;
+  border: none;
 }
 
 .action-count {
@@ -373,10 +374,10 @@ const submitReply = () => {
   margin-left: 76px;
   margin-right: 16px;
   margin-bottom: 12px;
-  border: 1px solid #e1e8ed;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
-  background-color: #fff;
+  background-color: var(--bg-primary);
 }
 
 .reply-form {
@@ -394,6 +395,8 @@ const submitReply = () => {
   min-height: 60px;
   overflow: hidden;
   line-height: 1.5;
+  background-color: transparent;
+  color: var(--text-primary);
 }
 
 .reply-input:focus {
@@ -409,7 +412,7 @@ const submitReply = () => {
 
 .reply-char-count {
   font-size: 12px;
-  color: #657786;
+  color: var(--text-secondary);
   margin-right: auto;
 }
 
@@ -425,17 +428,21 @@ const submitReply = () => {
 
 .cancel-button {
   background: none;
-  color: #657786;
+  color: var(--text-secondary);
   font-size: 14px;
   padding: 4px 12px;
   border-radius: 9999px;
-  border: 1px solid #cfd9de;
+  border: 1px solid var(--border-color);
   transition: background-color 0.2s;
 }
 
 .cancel-button:hover {
   background-color: rgba(0, 0, 0, 0.05);
   opacity: 1;
+}
+
+html.dark-mode .cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .submit-reply-button {

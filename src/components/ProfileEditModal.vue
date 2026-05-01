@@ -133,7 +133,7 @@ const save = () => {
 }
 
 .modal {
-  background: #fff;
+  background: var(--bg-primary);
   border-radius: 16px;
   width: 100%;
   max-width: 560px;
@@ -148,14 +148,14 @@ const save = () => {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid #e1e8ed;
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
 .modal-title {
   font-size: 17px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .close-button {
@@ -163,15 +163,20 @@ const save = () => {
   align-items: center;
   justify-content: center;
   background: none;
-  color: #14171a;
+  color: var(--text-primary);
   width: 34px;
   height: 34px;
   padding: 0;
   border-radius: 50%;
+  border: none;
 }
 
 .close-button:hover {
   background-color: rgba(0, 0, 0, 0.07);
+}
+
+html.dark-mode .close-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .save-button {
@@ -182,6 +187,11 @@ const save = () => {
   border-radius: 9999px;
 }
 
+html.dark-mode .save-button {
+  background-color: #f7f9fa;
+  color: #14171a;
+}
+
 .save-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -189,6 +199,10 @@ const save = () => {
 
 .save-button:not(:disabled):hover {
   background-color: #2d3748;
+}
+
+html.dark-mode .save-button:not(:disabled):hover {
+  background-color: #e1e8ed;
 }
 
 .modal-body {
@@ -211,7 +225,7 @@ const save = () => {
 
 .color-label {
   font-size: 13px;
-  color: #657786;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   font-weight: 600;
 }
@@ -229,6 +243,7 @@ const save = () => {
   border: 3px solid transparent;
   padding: 0;
   transition: transform 0.15s, border-color 0.15s;
+  background: none;
 }
 
 .color-swatch:hover {
@@ -237,7 +252,7 @@ const save = () => {
 }
 
 .color-swatch.selected {
-  border-color: #14171a;
+  border-color: var(--text-primary);
   transform: scale(1.1);
 }
 
@@ -250,7 +265,7 @@ const save = () => {
 .field-label {
   font-size: 14px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .required {
@@ -259,12 +274,14 @@ const save = () => {
 
 .field-input {
   width: 100%;
-  border: 1px solid #e1e8ed;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 15px;
   font-family: inherit;
   transition: border-color 0.2s;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .field-input:focus {
@@ -280,7 +297,7 @@ const save = () => {
 .id-input-wrap {
   display: flex;
   align-items: center;
-  border: 1px solid #e1e8ed;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
   transition: border-color 0.2s;
@@ -292,16 +309,17 @@ const save = () => {
 
 .at-sign {
   padding: 10px 8px 10px 12px;
-  color: #657786;
+  color: var(--text-secondary);
   font-size: 15px;
-  background-color: #f7f9fa;
-  border-right: 1px solid #e1e8ed;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
 }
 
 .id-input {
   border: none;
   border-radius: 0;
   flex: 1;
+  background-color: transparent;
 }
 
 .id-input:focus {
@@ -311,7 +329,7 @@ const save = () => {
 
 .field-count {
   font-size: 12px;
-  color: #657786;
+  color: var(--text-secondary);
   text-align: right;
 }
 

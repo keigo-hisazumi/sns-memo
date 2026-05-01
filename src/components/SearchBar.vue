@@ -55,9 +55,9 @@ const clear = () => {
   position: sticky;
   top: 53px;
   z-index: 100;
-  background-color: #fff;
+  background-color: var(--bg-primary);
   padding: 8px 16px 12px;
-  border-bottom: 1px solid #e1e8ed;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .search-input-wrapper {
@@ -70,15 +70,19 @@ const clear = () => {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+html.dark-mode .search-input-wrapper {
+  background-color: #22303c;
+}
+
 .search-input-wrapper:focus-within {
-  background-color: #fff;
+  background-color: var(--bg-primary);
   border-color: #1da1f2;
 }
 
 .search-icon {
   position: absolute;
   left: 12px;
-  color: #657786;
+  color: var(--text-secondary);
   pointer-events: none;
 }
 
@@ -93,11 +97,11 @@ const clear = () => {
   outline: none;
   padding: 8px 36px 8px 38px;
   font-size: 15px;
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .search-input::placeholder {
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .clear-button {
@@ -106,7 +110,7 @@ const clear = () => {
   background: none;
   border: none;
   padding: 2px;
-  color: #657786;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   border-radius: 50%;

@@ -70,8 +70,8 @@ const submitMemo = () => {
 <style scoped>
 .memo-form {
   padding: 16px;
-  border-bottom: 1px solid #e1e8ed;
-  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
 }
 
 .form-header {
@@ -88,6 +88,8 @@ const submitMemo = () => {
   padding: 8px;
   min-height: 80px;
   overflow: hidden;
+  background-color: transparent;
+  color: var(--text-primary);
 }
 
 .memo-input:focus {
@@ -104,7 +106,7 @@ const submitMemo = () => {
 
 .char-count {
   font-size: 13px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .char-count.caution {

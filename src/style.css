@@ -5,20 +5,50 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f9fa;
+  --bg-tertiary: #e8f5fd;
+  --text-primary: #14171a;
+  --text-secondary: #657786;
+  --border-color: #e1e8ed;
+  --thread-line: #cfd9de;
+  --accent-blue: #1da1f2;
+  --accent-red: #e0245e;
+  --accent-orange: #f4900c;
+  --card-hover: #f7f9fa;
+  --pinned-bg: #f0f8ff;
+}
+
+html.dark-mode {
+  --bg-primary: #15202b;
+  --bg-secondary: #192734;
+  --bg-tertiary: #22303c;
+  --text-primary: #f7f9fa;
+  --text-secondary: #8899a6;
+  --border-color: #38444d;
+  --thread-line: #38444d;
+  --accent-blue: #1da1f2;
+  --accent-red: #e0245e;
+  --accent-orange: #f4900c;
+  --card-hover: #22303c;
+  --pinned-bg: #1a3a52;
+}
+
 html {
   overflow-y: scroll;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #f7f9fa;
-  color: #14171a;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   line-height: 1.5;
 }
 
 #app {
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: var(--bg-primary);
 }
 
 @media (min-width: 768px) {
@@ -49,11 +79,13 @@ button:active {
 /* 入力フィールド共通スタイル */
 input, textarea {
   font-family: inherit;
-  border: 1px solid #e1e8ed;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px;
   font-size: 15px;
   transition: border-color 0.2s;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 input:focus, textarea:focus {

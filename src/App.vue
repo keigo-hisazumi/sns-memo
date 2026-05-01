@@ -68,16 +68,19 @@ const currentPage = ref('home')
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(21, 32, 43, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e1e8ed;
-  /* 全幅表示のため width を指定しない（ブロック要素デフォルト） */
+  border-bottom: 1px solid var(--border-color);
+}
+
+html:not(.dark-mode) .app-header {
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .app-title {
   font-size: 18px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
 }
 
 .app-wrapper {
@@ -115,20 +118,20 @@ const currentPage = ref('home')
 .search-prompt-message {
   font-size: 24px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .search-prompt-hint {
   font-size: 15px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 @media (min-width: 768px) {
   .app-container {
     padding-bottom: 0;
     max-width: 600px;
-    border-right: 1px solid #e1e8ed;
+    border-right: 1px solid var(--border-color);
   }
 }
 </style>

@@ -64,18 +64,19 @@ defineProps({
 .empty-state svg {
   margin-bottom: 16px;
   opacity: 0.5;
+  color: var(--text-secondary);
 }
 
 .empty-message {
   font-size: 24px;
   font-weight: 700;
-  color: #14171a;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .empty-hint {
   font-size: 15px;
-  color: #657786;
+  color: var(--text-secondary);
 }
 
 .memo-enter-active {
