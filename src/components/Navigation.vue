@@ -13,6 +13,10 @@
         <span class="nav-label">{{ item.label }}</span>
       </li>
     </ul>
+    <button class="theme-toggle-button" @click="toggleDarkMode" :title="isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'">
+      <component :is="isDarkMode ? MoonIcon : SunIcon" class="nav-icon" />
+      <span class="nav-label">{{ isDarkMode ? 'ダーク' : 'ライト' }}</span>
+    </button>
   </nav>
 
   <!-- モバイル: 下部ナビゲーション -->
@@ -28,12 +32,17 @@
         <component :is="item.icon" class="nav-icon" />
         <span class="nav-bottom-label">{{ item.label }}</span>
       </li>
+      <li class="nav-bottom-item" @click="toggleDarkMode" :title="isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'">
+        <component :is="isDarkMode ? MoonIcon : SunIcon" class="nav-icon" />
+        <span class="nav-bottom-label">{{ isDarkMode ? 'ダーク' : 'ライト' }}</span>
+      </li>
     </ul>
   </nav>
 </template>
 
 <script setup>
 import { h } from 'vue'
+import { useDarkMode } from '../composables/useDarkMode.js'
 
 const props = defineProps({
   currentPage: {
@@ -43,6 +52,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['navigate'])
+const { isDarkMode, toggleDarkMode } = useDarkMode()
 
 const HomeIcon = () =>
   h(
@@ -74,6 +84,32 @@ const ProfileIcon = () =>
     ]
   )
 
+const MoonIcon = () =>
+  h(
+    'svg',
+    { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+    [
+      h('path', { d: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' }),
+    ]
+  )
+
+const SunIcon = () =>
+  h(
+    'svg',
+    { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+    [
+      h('circle', { cx: '12', cy: '12', r: '5' }),
+      h('line', { x1: '12', y1: '1', x2: '12', y2: '3' }),
+      h('line', { x1: '12', y1: '21', x2: '12', y2: '23' }),
+      h('line', { x1: '4.22', y1: '4.22', x2: '5.64', y2: '5.64' }),
+      h('line', { x1: '18.36', y1: '18.36', x2: '19.78', y2: '19.78' }),
+      h('line', { x1: '1', y1: '12', x2: '3', y2: '12' }),
+      h('line', { x1: '21', y1: '12', x2: '23', y2: '12' }),
+      h('line', { x1: '4.22', y1: '19.78', x2: '5.64', y2: '18.36' }),
+      h('line', { x1: '18.36', y1: '5.64', x2: '19.78', y2: '4.22' }),
+    ]
+  )
+
 const navItems = [
   { id: 'home', label: 'ホーム', icon: HomeIcon },
   { id: 'search', label: '検索', icon: SearchIcon },
@@ -93,8 +129,8 @@ const navItems = [
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e1e8ed;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
   z-index: 200;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
@@ -115,9 +151,11 @@ const navItems = [
   gap: 3px;
   padding: 8px 4px;
   cursor: pointer;
-  color: #657786;
+  color: var(--text-secondary);
   transition: color 0.2s;
   border-radius: 0;
+  background: none;
+  border: none;
 }
 
 .nav-bottom-item:hover {
@@ -150,8 +188,8 @@ const navItems = [
     width: 240px;
     padding: 16px 12px;
     flex-shrink: 0;
-    border-right: 1px solid #e1e8ed;
-    background-color: #ffffff;
+    border-right: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
     overflow-y: auto;
   }
 
@@ -175,14 +213,14 @@ const navItems = [
     padding: 12px 16px;
     border-radius: 9999px;
     cursor: pointer;
-    color: #14171a;
+    color: var(--text-primary);
     font-size: 17px;
     font-weight: 700;
     transition: background-color 0.2s, color 0.2s;
   }
 
   .nav-item:hover {
-    background-color: #e8f5fd;
+    background-color: var(--bg-tertiary);
     color: #1da1f2;
   }
 
@@ -202,6 +240,27 @@ const navItems = [
     width: 26px;
     height: 26px;
     flex-shrink: 0;
+  }
+
+  .theme-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-radius: 9999px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 700;
+    transition: background-color 0.2s, color 0.2s;
+    background: none;
+    border: none;
+    margin-top: auto;
+  }
+
+  .theme-toggle-button:hover {
+    background-color: var(--bg-tertiary);
+    color: #1da1f2;
   }
 }
 </style>
