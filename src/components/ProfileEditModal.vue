@@ -129,7 +129,7 @@ const save = () => {
   align-items: flex-start;
   justify-content: center;
   z-index: 200;
-  padding-top: 40px;
+  padding: 40px 16px;
 }
 
 .modal {
@@ -156,6 +156,12 @@ const save = () => {
   font-size: 17px;
   font-weight: 700;
   color: var(--text-primary);
+  flex: 1;
+  text-align: center;
+  margin: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .close-button {
@@ -340,13 +346,29 @@ html.dark-mode .save-button:not(:disabled):hover {
 
 @media (max-width: 600px) {
   .modal-overlay {
-    padding-top: 0;
-    align-items: flex-end;
+    padding: 0;
+    align-items: stretch;
   }
 
   .modal {
-    border-radius: 16px 16px 0 0;
-    max-height: 92vh;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .modal-body {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .avatar-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .save-button {
+    padding: 6px 14px;
   }
 }
 </style>
