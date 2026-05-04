@@ -1,34 +1,37 @@
 import { ref, watch } from 'vue'
+import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'
+import { db } from '../firebase.js'
+import { useAuth } from './useAuth.js'
 
-const STORAGE_KEY = 'sns-memo-profile'
+const { currentUser } = useAuth()
 
-const defaultProfile = {
-  name: 'あなた',
-  userId: 'user',
+const profile = ref({
+  name: '',
+  userId: '',
   bio: '',
   avatarColor: '#1da1f2'
-}
+})
 
-const loadProfile = () => {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY)
-    return data ? { ...defaultProfile, ...JSON.parse(data) } : { ...defaultProfile }
-  } catch {
-    return { ...defaultProfile }
+let unsubscribe = null
+
+watch(currentUser, (user) => {
+  if (unsubscribe) {
+    unsubscribe()
+    unsubscribe = null
   }
-}
+  if (!user) return
 
-const profile = ref(loadProfile())
-
-watch(profile, (val) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-  } catch {}
-}, { deep: true })
+  unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+    if (snap.exists()) {
+      profile.value = { ...profile.value, ...snap.data() }
+    }
+  })
+}, { immediate: true })
 
 export function useProfile() {
-  const updateProfile = (updates) => {
-    profile.value = { ...profile.value, ...updates }
+  const updateProfile = async (updates) => {
+    if (!currentUser.value) return
+    await updateDoc(doc(db, 'users', currentUser.value.uid), updates)
   }
 
   return { profile, updateProfile }
