@@ -7,7 +7,6 @@ import {
   doc,
   query,
   where,
-  orderBy,
   onSnapshot,
   serverTimestamp
 } from 'firebase/firestore'
@@ -24,8 +23,7 @@ const startListening = (uid) => {
   stopListening()
   const q = query(
     collection(db, 'memos'),
-    where('uid', '==', uid),
-    orderBy('createdAt', 'desc')
+    where('uid', '==', uid)
   )
   unsubscribe = onSnapshot(q, (snapshot) => {
     memos.value = snapshot.docs.map((d) => {
@@ -36,6 +34,8 @@ const startListening = (uid) => {
         createdAt: data.createdAt?.toDate?.()?.toISOString() ?? data.createdAt
       }
     })
+  }, (error) => {
+    console.error('Firestore snapshot error:', error)
   })
 }
 
@@ -57,7 +57,7 @@ const topLevelMemos = computed(() =>
     .filter((m) => !m.parentId)
     .sort((a, b) => {
       if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-      return 0
+      return new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0)
     })
 )
 
