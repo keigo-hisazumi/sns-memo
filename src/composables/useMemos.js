@@ -28,7 +28,14 @@ const startListening = (uid) => {
     orderBy('createdAt', 'desc')
   )
   unsubscribe = onSnapshot(q, (snapshot) => {
-    memos.value = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+    memos.value = snapshot.docs.map((d) => {
+      const data = d.data()
+      return {
+        id: d.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() ?? data.createdAt
+      }
+    })
   })
 }
 

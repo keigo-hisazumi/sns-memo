@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore'
+import { doc, setDoc, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase.js'
 import { useAuth } from './useAuth.js'
 
@@ -31,7 +31,7 @@ watch(currentUser, (user) => {
 export function useProfile() {
   const updateProfile = async (updates) => {
     if (!currentUser.value) return
-    await updateDoc(doc(db, 'users', currentUser.value.uid), updates)
+    await setDoc(doc(db, 'users', currentUser.value.uid), updates, { merge: true })
   }
 
   return { profile, updateProfile }
