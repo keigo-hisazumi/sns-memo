@@ -1,95 +1,123 @@
-import { ref, watch, computed } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+  query,
+  where,
+  onSnapshot,
+  serverTimestamp
+} from 'firebase/firestore'
+import { db } from '../firebase.js'
+import { useAuth } from './useAuth.js'
 
-const STORAGE_KEY = 'sns-memo-data'
+const { currentUser } = useAuth()
 
-const loadMemos = () => {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY)
-    return data ? JSON.parse(data) : []
-  } catch (error) {
-    console.error('メモの読み込みに失敗しました:', error)
-    return []
-  }
+const memos = ref([])
+const searchQuery = ref('')
+let unsubscribe = null
+
+const startListening = (uid) => {
+  stopListening()
+  const q = query(
+    collection(db, 'memos'),
+    where('uid', '==', uid)
+  )
+  unsubscribe = onSnapshot(q, (snapshot) => {
+    memos.value = snapshot.docs.map((d) => {
+      const data = d.data()
+      return {
+        id: d.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() ?? data.createdAt
+      }
+    })
+  }, (error) => {
+    console.error('Firestore snapshot error:', error)
+  })
 }
 
-const memos = ref(loadMemos())
-const searchQuery = ref('')
+const stopListening = () => {
+  if (unsubscribe) {
+    unsubscribe()
+    unsubscribe = null
+  }
+  memos.value = []
+}
 
-const topLevelMemos = computed(() => {
-  return memos.value
-    .filter(m => !m.parentId)
+watch(currentUser, (user) => {
+  if (user) startListening(user.uid)
+  else stopListening()
+}, { immediate: true })
+
+const topLevelMemos = computed(() =>
+  memos.value
+    .filter((m) => !m.parentId)
     .sort((a, b) => {
       if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-      return 0
+      return new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0)
     })
-})
+)
 
 const filteredMemos = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase()
-  if (!query) return []
-  return memos.value.filter(memo =>
-    memo.content.toLowerCase().includes(query)
-  )
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return []
+  return memos.value.filter((m) => m.content.toLowerCase().includes(q))
 })
 
-const saveMemos = () => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(memos.value))
-  } catch (error) {
-    console.error('メモの保存に失敗しました:', error)
-  }
-}
-
-watch(memos, saveMemos, { deep: true })
-
-const addMemo = (content, parentId = null) => {
-  if (!content.trim()) return
-
-  const newMemo = {
-    id: crypto.randomUUID(),
-    content: content.trim(),
-    createdAt: new Date().toISOString(),
-    likes: 0,
-    isLiked: false,
-    isPinned: false,
-    parentId: parentId || null
-  }
-
-  memos.value.unshift(newMemo)
-}
-
-const deleteMemo = (id) => {
-  const getChildIds = (parentId) => {
-    return memos.value
-      .filter(m => m.parentId === parentId)
-      .flatMap(c => [c.id, ...getChildIds(c.id)])
-  }
-  const idsToDelete = new Set([id, ...getChildIds(id)])
-  memos.value = memos.value.filter(m => !idsToDelete.has(m.id))
-}
-
-const toggleLike = (id) => {
-  const memo = memos.value.find(m => m.id === id)
-  if (memo) {
-    memo.isLiked = !memo.isLiked
-    memo.likes += memo.isLiked ? 1 : -1
-  }
-}
-
-const togglePin = (id) => {
-  const memo = memos.value.find(m => m.id === id)
-  if (memo) {
-    memo.isPinned = !memo.isPinned
-  }
-}
-
-const getReplies = (parentId) => {
-  return memos.value
-    .filter(m => m.parentId === parentId)
-    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-}
+const memosRef = () => collection(db, 'memos')
 
 export function useMemos() {
+  const addMemo = async (content, parentId = null) => {
+    if (!content.trim() || !currentUser.value) return
+    await addDoc(memosRef(), {
+      uid: currentUser.value.uid,
+      content: content.trim(),
+      createdAt: serverTimestamp(),
+      likes: 0,
+      isLiked: false,
+      isPinned: false,
+      parentId: parentId || null
+    })
+  }
+
+  const deleteMemo = async (id) => {
+    const getChildIds = (parentId) =>
+      memos.value
+        .filter((m) => m.parentId === parentId)
+        .flatMap((c) => [c.id, ...getChildIds(c.id)])
+
+    const idsToDelete = [id, ...getChildIds(id)]
+    await Promise.all(idsToDelete.map((did) => deleteDoc(doc(db, 'memos', did))))
+  }
+
+  const toggleLike = async (id) => {
+    const memo = memos.value.find((m) => m.id === id)
+    if (!memo) return
+    const newIsLiked = !memo.isLiked
+    await updateDoc(doc(db, 'memos', id), {
+      isLiked: newIsLiked,
+      likes: memo.likes + (newIsLiked ? 1 : -1)
+    })
+  }
+
+  const togglePin = async (id) => {
+    const memo = memos.value.find((m) => m.id === id)
+    if (!memo) return
+    await updateDoc(doc(db, 'memos', id), { isPinned: !memo.isPinned })
+  }
+
+  const getReplies = (parentId) =>
+    memos.value
+      .filter((m) => m.parentId === parentId)
+      .sort((a, b) => {
+        const ta = a.createdAt?.toDate?.() ?? new Date(a.createdAt)
+        const tb = b.createdAt?.toDate?.() ?? new Date(b.createdAt)
+        return ta - tb
+      })
+
   return {
     memos: filteredMemos,
     allMemos: topLevelMemos,
