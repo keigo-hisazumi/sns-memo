@@ -22,7 +22,30 @@
             <span class="user-id">@{{ profile.userId }}</span>
             <span class="timestamp">{{ formatDate(item.createdAt) }}</span>
           </div>
-          <p class="memo-text">{{ item.content }}</p>
+          <p v-if="editingId !== item.id" class="memo-text">{{ item.content }}</p>
+          <div v-else class="edit-form-container">
+            <textarea
+              :ref="el => { if (el) editTextarea = el }"
+              v-model="editContent"
+              class="edit-input"
+              @keydown.ctrl.enter="submitEdit"
+              @keydown.meta.enter="submitEdit"
+              @keydown.esc="cancelEdit"
+            ></textarea>
+            <div class="edit-form-footer">
+              <span class="edit-char-count" :class="editCharCountClass">
+                {{ editContent.length }}/280
+              </span>
+              <button class="cancel-button" @click="cancelEdit">キャンセル</button>
+              <button
+                class="submit-reply-button"
+                @click="submitEdit"
+                :disabled="!editContent.trim() || editContent.length > 280"
+              >
+                保存
+              </button>
+            </div>
+          </div>
           <div class="memo-actions">
             <div class="action-cell">
               <button
@@ -66,6 +89,22 @@
                   <path
                     :fill="item.isPinned ? '#1da1f2' : 'currentColor'"
                     d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div class="action-cell">
+              <button
+                class="action-button edit-button"
+                :class="{ active: editingId === item.id }"
+                @click="startEdit(item)"
+                title="編集"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    fill="currentColor"
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
                   />
                 </svg>
               </button>
@@ -134,11 +173,44 @@ const props = defineProps({
 })
 
 const { profile } = useProfile()
-const { addMemo, deleteMemo, toggleLike, togglePin, getReplies } = useMemos()
+const { addMemo, deleteMemo, toggleLike, togglePin, getReplies, updateMemo } = useMemos()
 
 const replyingToId = ref(null)
 const replyContent = ref('')
 const activeTextarea = ref(null)
+
+const editingId = ref(null)
+const editContent = ref('')
+const editTextarea = ref(null)
+
+const editCharCountClass = computed(() => {
+  const len = editContent.value.length
+  if (len >= 280) return 'over'
+  if (len >= 260) return 'caution'
+  return ''
+})
+
+const startEdit = async (item) => {
+  if (editingId.value === item.id) {
+    cancelEdit()
+    return
+  }
+  editingId.value = item.id
+  editContent.value = item.content
+  await nextTick()
+  editTextarea.value?.focus()
+}
+
+const cancelEdit = () => {
+  editingId.value = null
+  editContent.value = ''
+}
+
+const submitEdit = async () => {
+  if (!editContent.value.trim() || editContent.value.length > 280 || !editingId.value) return
+  await updateMemo(editingId.value, editContent.value)
+  cancelEdit()
+}
 
 const getDescendants = (memoId) => {
   const directReplies = getReplies(memoId)
@@ -356,9 +428,67 @@ const submitReply = () => {
   color: #1da1f2;
 }
 
+.edit-button.active {
+  color: #1da1f2;
+}
+
+.edit-button:hover {
+  background-color: rgba(29, 161, 242, 0.1);
+  color: #1da1f2;
+}
+
 .delete-button:hover {
   background-color: rgba(224, 36, 94, 0.1);
   color: #e0245e;
+}
+
+.edit-form-container {
+  margin-bottom: 12px;
+  border: 1px solid #1da1f2;
+  border-radius: 8px;
+  padding: 10px 12px 8px;
+  background-color: var(--bg-primary);
+}
+
+.edit-input {
+  width: 100%;
+  border: none;
+  resize: none;
+  font-size: 15px;
+  padding: 0;
+  min-height: 72px;
+  line-height: 1.5;
+  background-color: transparent;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.edit-input:focus {
+  outline: none;
+}
+
+.edit-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.edit-char-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-right: auto;
+}
+
+.edit-char-count.caution {
+  color: #f4900c;
+  font-weight: 600;
+}
+
+.edit-char-count.over {
+  color: #e0245e;
+  font-weight: 600;
 }
 
 .action-button svg {

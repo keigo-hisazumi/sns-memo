@@ -109,6 +109,11 @@ export function useMemos() {
     await updateDoc(doc(db, 'memos', id), { isPinned: !memo.isPinned })
   }
 
+  const updateMemo = async (id, content) => {
+    if (!content.trim()) return
+    await updateDoc(doc(db, 'memos', id), { content: content.trim() })
+  }
+
   const getReplies = (parentId) =>
     memos.value
       .filter((m) => m.parentId === parentId)
@@ -126,6 +131,7 @@ export function useMemos() {
     deleteMemo,
     toggleLike,
     togglePin,
-    getReplies
+    getReplies,
+    updateMemo
   }
 }
