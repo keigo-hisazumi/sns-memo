@@ -169,7 +169,7 @@ const submit = async () => {
   border-radius: 8px;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.2s;
 }

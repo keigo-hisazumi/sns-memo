@@ -454,7 +454,7 @@ const submitReply = () => {
   width: 100%;
   border: none;
   resize: none;
-  font-size: 15px;
+  font-size: 16px;
   padding: 0;
   min-height: 72px;
   line-height: 1.5;
@@ -520,7 +520,7 @@ const submitReply = () => {
   flex: 1;
   border: none;
   resize: none;
-  font-size: 15px;
+  font-size: 16px;
   padding: 4px 0;
   min-height: 60px;
   overflow: hidden;

@@ -283,7 +283,7 @@ html.dark-mode .save-button:not(:disabled):hover {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 15px;
+  font-size: 16px;
   font-family: inherit;
   transition: border-color 0.2s;
   background-color: var(--bg-primary);
