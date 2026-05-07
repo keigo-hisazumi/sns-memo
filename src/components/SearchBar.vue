@@ -96,7 +96,7 @@ html.dark-mode .search-input-wrapper {
   border: none;
   outline: none;
   padding: 8px 36px 8px 38px;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-primary);
 }
 
