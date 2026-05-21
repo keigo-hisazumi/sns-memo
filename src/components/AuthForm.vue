@@ -60,13 +60,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useAuth } from '../composables/useAuth.js'
+import { useAuth } from '../composables/useAuth'
 
 const { authError, login, register } = useAuth()
 
-const mode = ref('login')
+const mode = ref<'login' | 'register'>('login')
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
