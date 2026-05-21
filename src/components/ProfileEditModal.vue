@@ -82,16 +82,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive } from 'vue'
-import { useProfile } from '../composables/useProfile.js'
+import { useProfile } from '../composables/useProfile'
 import UserAvatar from './UserAvatar.vue'
 
-const emit = defineEmits(['close', 'saved'])
+const emit = defineEmits<{
+  close: []
+  saved: []
+}>()
 
 const { profile, updateProfile } = useProfile()
 
-const AVATAR_COLORS = [
+const AVATAR_COLORS: string[] = [
   '#1da1f2', '#e0245e', '#17bf63', '#f4900c',
   '#794bc4', '#ff7043', '#00b8d4', '#546e7a'
 ]

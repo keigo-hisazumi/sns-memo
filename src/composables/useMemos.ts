@@ -1,4 +1,4 @@
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import {
   collection,
   addDoc,
@@ -8,30 +8,37 @@ import {
   query,
   where,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  type Unsubscribe
 } from 'firebase/firestore'
-import { db } from '../firebase.js'
-import { useAuth } from './useAuth.js'
+import { db } from '../firebase'
+import { useAuth } from './useAuth'
+import type { Memo } from '../types'
 
 const { currentUser } = useAuth()
 
-const memos = ref([])
+const memos = ref<Memo[]>([])
 const searchQuery = ref('')
-let unsubscribe = null
+let unsubscribe: Unsubscribe | null = null
 
-const startListening = (uid) => {
+const startListening = (uid: string) => {
   stopListening()
   const q = query(
     collection(db, 'memos'),
     where('uid', '==', uid)
   )
   unsubscribe = onSnapshot(q, (snapshot) => {
-    memos.value = snapshot.docs.map((d) => {
+    memos.value = snapshot.docs.map((d): Memo => {
       const data = d.data()
       return {
         id: d.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() ?? data.createdAt
+        uid: data.uid,
+        content: data.content,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() ?? data.createdAt ?? null,
+        likes: data.likes,
+        isLiked: data.isLiked,
+        isPinned: data.isPinned,
+        parentId: data.parentId ?? null
       }
     })
   }, (error) => {
@@ -57,7 +64,7 @@ const topLevelMemos = computed(() =>
     .filter((m) => !m.parentId)
     .sort((a, b) => {
       if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-      return new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0)
+      return new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
     })
 )
 
@@ -70,7 +77,7 @@ const filteredMemos = computed(() => {
 const memosRef = () => collection(db, 'memos')
 
 export function useMemos() {
-  const addMemo = async (content, parentId = null) => {
+  const addMemo = async (content: string, parentId: string | null = null) => {
     if (!content.trim() || !currentUser.value) return
     await addDoc(memosRef(), {
       uid: currentUser.value.uid,
@@ -83,8 +90,8 @@ export function useMemos() {
     })
   }
 
-  const deleteMemo = async (id) => {
-    const getChildIds = (parentId) =>
+  const deleteMemo = async (id: string) => {
+    const getChildIds = (parentId: string): string[] =>
       memos.value
         .filter((m) => m.parentId === parentId)
         .flatMap((c) => [c.id, ...getChildIds(c.id)])
@@ -93,7 +100,7 @@ export function useMemos() {
     await Promise.all(idsToDelete.map((did) => deleteDoc(doc(db, 'memos', did))))
   }
 
-  const toggleLike = async (id) => {
+  const toggleLike = async (id: string) => {
     const memo = memos.value.find((m) => m.id === id)
     if (!memo) return
     const newIsLiked = !memo.isLiked
@@ -103,23 +110,23 @@ export function useMemos() {
     })
   }
 
-  const togglePin = async (id) => {
+  const togglePin = async (id: string) => {
     const memo = memos.value.find((m) => m.id === id)
     if (!memo) return
     await updateDoc(doc(db, 'memos', id), { isPinned: !memo.isPinned })
   }
 
-  const updateMemo = async (id, content) => {
+  const updateMemo = async (id: string, content: string) => {
     if (!content.trim()) return
     await updateDoc(doc(db, 'memos', id), { content: content.trim() })
   }
 
-  const getReplies = (parentId) =>
+  const getReplies = (parentId: string): Memo[] =>
     memos.value
       .filter((m) => m.parentId === parentId)
       .sort((a, b) => {
-        const ta = a.createdAt?.toDate?.() ?? new Date(a.createdAt)
-        const tb = b.createdAt?.toDate?.() ?? new Date(b.createdAt)
+        const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0
         return ta - tb
       })
 

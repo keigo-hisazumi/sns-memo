@@ -66,10 +66,10 @@
   </template>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useMemos } from './composables/useMemos.js'
-import { useAuth } from './composables/useAuth.js'
+import { useMemos } from './composables/useMemos'
+import { useAuth } from './composables/useAuth'
 import Navigation from './components/Navigation.vue'
 import MemoForm from './components/MemoForm.vue'
 import MemoList from './components/MemoList.vue'

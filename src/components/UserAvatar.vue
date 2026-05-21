@@ -12,13 +12,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  name: { type: String, default: 'あなた' },
-  color: { type: String, default: '#1da1f2' },
-  size: { type: Number, default: 40 }
+const props = withDefaults(defineProps<{
+  name?: string
+  color?: string
+  size?: number
+}>(), {
+  name: 'あなた',
+  color: '#1da1f2',
+  size: 40
 })
 
 const initial = computed(() => props.name.trim().charAt(0) || '?')

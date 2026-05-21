@@ -3,15 +3,17 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  type User
 } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
-import { auth, db } from '../firebase.js'
+import { auth, db } from '../firebase'
 
-const currentUser = ref(null)
+const currentUser = ref<User | null>(null)
 const authLoading = ref(true)
 
-const defaultProfile = (uid, email) => ({
+const defaultProfile = (uid: string, email: string) => ({
   name: email.split('@')[0],
   userId: uid.slice(0, 8),
   bio: '',
@@ -27,7 +29,7 @@ onAuthStateChanged(auth, async (user) => {
 export function useAuth() {
   const authError = ref('')
 
-  const register = async (email, password) => {
+  const register = async (email: string, password: string) => {
     authError.value = ''
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
@@ -38,18 +40,18 @@ export function useAuth() {
       }
       return user
     } catch (e) {
-      authError.value = translateAuthError(e.code)
+      authError.value = translateAuthError((e as FirebaseError).code)
       throw e
     }
   }
 
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     authError.value = ''
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password)
       return user
     } catch (e) {
-      authError.value = translateAuthError(e.code)
+      authError.value = translateAuthError((e as FirebaseError).code)
       throw e
     }
   }
@@ -61,8 +63,8 @@ export function useAuth() {
   return { currentUser, authLoading, authError, register, login, logout }
 }
 
-function translateAuthError(code) {
-  const messages = {
+function translateAuthError(code: string): string {
+  const messages: Record<string, string> = {
     'auth/email-already-in-use': 'このメールアドレスはすでに使われています',
     'auth/invalid-email': 'メールアドレスの形式が正しくありません',
     'auth/weak-password': 'パスワードは6文字以上にしてください',

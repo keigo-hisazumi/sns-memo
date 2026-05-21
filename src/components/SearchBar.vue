@@ -28,21 +28,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    required: true
-  }
-})
+const props = defineProps<{
+  modelValue: string
+}>()
 
-const emit = defineEmits(['update:modelValue', 'focus', 'blur'])
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+  focus: []
+  blur: []
+}>()
 
 const query = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: (val: string) => emit('update:modelValue', val)
 })
 
 const clear = () => {

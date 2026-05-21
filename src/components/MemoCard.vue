@@ -25,7 +25,7 @@
           <p v-if="editingId !== item.id" class="memo-text">{{ item.content }}</p>
           <div v-else class="edit-form-container">
             <textarea
-              :ref="el => { if (el) editTextarea = el }"
+              :ref="setEditTextarea"
               v-model="editContent"
               class="edit-input"
               @keydown.ctrl.enter="submitEdit"
@@ -132,7 +132,7 @@
           <div class="reply-form">
             <UserAvatar :name="profile.name" :color="profile.avatarColor" :size="32" />
             <textarea
-              :ref="el => { if (el) activeTextarea = el }"
+              :ref="setActiveTextarea"
               v-model="replyContent"
               placeholder="リプライを入力..."
               class="reply-input"
@@ -159,29 +159,36 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { useProfile } from '../composables/useProfile.js'
-import { useMemos } from '../composables/useMemos.js'
+import type { ComponentPublicInstance } from 'vue'
+import { useProfile } from '../composables/useProfile'
+import { useMemos } from '../composables/useMemos'
 import UserAvatar from './UserAvatar.vue'
+import type { Memo } from '../types'
 
-const props = defineProps({
-  memo: {
-    type: Object,
-    required: true
-  }
-})
+const props = defineProps<{
+  memo: Memo
+}>()
 
 const { profile } = useProfile()
 const { addMemo, deleteMemo, toggleLike, togglePin, getReplies, updateMemo } = useMemos()
 
-const replyingToId = ref(null)
+const replyingToId = ref<string | null>(null)
 const replyContent = ref('')
-const activeTextarea = ref(null)
+const activeTextarea = ref<HTMLTextAreaElement | null>(null)
 
-const editingId = ref(null)
+const editingId = ref<string | null>(null)
 const editContent = ref('')
-const editTextarea = ref(null)
+const editTextarea = ref<HTMLTextAreaElement | null>(null)
+
+const setActiveTextarea = (el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLTextAreaElement) activeTextarea.value = el
+}
+
+const setEditTextarea = (el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLTextAreaElement) editTextarea.value = el
+}
 
 const editCharCountClass = computed(() => {
   const len = editContent.value.length
@@ -190,7 +197,7 @@ const editCharCountClass = computed(() => {
   return ''
 })
 
-const startEdit = async (item) => {
+const startEdit = async (item: Memo) => {
   if (editingId.value === item.id) {
     cancelEdit()
     return
@@ -212,14 +219,14 @@ const submitEdit = async () => {
   cancelEdit()
 }
 
-const getDescendants = (memoId) => {
+const getDescendants = (memoId: string): Memo[] => {
   const directReplies = getReplies(memoId)
   return directReplies.flatMap(reply => [reply, ...getDescendants(reply.id)])
 }
 
 const threadItems = computed(() => [props.memo, ...getDescendants(props.memo.id)])
 
-const replyCountFor = (memoId) => getReplies(memoId).length
+const replyCountFor = (memoId: string) => getReplies(memoId).length
 
 const replyCharCountClass = computed(() => {
   const len = replyContent.value.length
@@ -234,10 +241,11 @@ const TIME_CONSTANTS = {
   DAYS_PER_WEEK: 7
 }
 
-const formatDate = (createdAt) => {
+const formatDate = (createdAt: string | null): string => {
+  if (!createdAt) return ''
   const date = new Date(createdAt)
   const now = new Date()
-  const diffMs = now - date
+  const diffMs = now.getTime() - date.getTime()
   const diffMins = Math.floor(diffMs / 60000)
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
@@ -250,7 +258,7 @@ const formatDate = (createdAt) => {
   return date.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
 }
 
-const toggleReplyForm = async (itemId) => {
+const toggleReplyForm = async (itemId: string) => {
   if (replyingToId.value === itemId) {
     replyingToId.value = null
     replyContent.value = ''

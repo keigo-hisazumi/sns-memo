@@ -27,15 +27,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { useProfile } from '../composables/useProfile.js'
+import { useProfile } from '../composables/useProfile'
 import UserAvatar from './UserAvatar.vue'
 
-const emit = defineEmits(['submit'])
+const emit = defineEmits<{
+  submit: [content: string]
+}>()
 const { profile } = useProfile()
 const content = ref('')
-const textareaRef = ref(null)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 const MAX_CHARS = 280
 const YELLOW_THRESHOLD = 260

@@ -33,10 +33,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useProfile } from '../composables/useProfile.js'
-import { useMemos } from '../composables/useMemos.js'
+import { useProfile } from '../composables/useProfile'
+import { useMemos } from '../composables/useMemos'
 import UserAvatar from './UserAvatar.vue'
 import MemoCard from './MemoCard.vue'
 import ProfileEditModal from './ProfileEditModal.vue'

@@ -1,18 +1,19 @@
 import { ref, watch } from 'vue'
 import { doc, setDoc, onSnapshot } from 'firebase/firestore'
-import { db } from '../firebase.js'
-import { useAuth } from './useAuth.js'
+import { db } from '../firebase'
+import { useAuth } from './useAuth'
+import type { Profile } from '../types'
 
 const { currentUser } = useAuth()
 
-const profile = ref({
+const profile = ref<Profile>({
   name: '',
   userId: '',
   bio: '',
   avatarColor: '#1da1f2'
 })
 
-let unsubscribe = null
+let unsubscribe: (() => void) | null = null
 
 watch(currentUser, (user) => {
   if (unsubscribe) {
@@ -23,13 +24,13 @@ watch(currentUser, (user) => {
 
   unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snap) => {
     if (snap.exists()) {
-      profile.value = { ...profile.value, ...snap.data() }
+      profile.value = { ...profile.value, ...(snap.data() as Partial<Profile>) }
     }
   })
 }, { immediate: true })
 
 export function useProfile() {
-  const updateProfile = async (updates) => {
+  const updateProfile = async (updates: Partial<Profile>) => {
     if (!currentUser.value) return
     await setDoc(doc(db, 'users', currentUser.value.uid), updates, { merge: true })
   }

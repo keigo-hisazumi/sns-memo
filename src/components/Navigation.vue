@@ -40,18 +40,18 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { h } from 'vue'
-import { useDarkMode } from '../composables/useDarkMode.js'
+import type { VNode } from 'vue'
+import { useDarkMode } from '../composables/useDarkMode'
 
-const props = defineProps({
-  currentPage: {
-    type: String,
-    required: true,
-  },
-})
+defineProps<{
+  currentPage: string
+}>()
 
-const emit = defineEmits(['navigate'])
+const emit = defineEmits<{
+  navigate: [id: string]
+}>()
 const { isDarkMode, toggleDarkMode } = useDarkMode()
 
 const HomeIcon = () =>
@@ -110,7 +110,13 @@ const SunIcon = () =>
     ]
   )
 
-const navItems = [
+interface NavItem {
+  id: string
+  label: string
+  icon: () => VNode
+}
+
+const navItems: NavItem[] = [
   { id: 'home', label: 'ホーム', icon: HomeIcon },
   { id: 'search', label: '検索', icon: SearchIcon },
   { id: 'profile', label: 'プロフィール', icon: ProfileIcon },

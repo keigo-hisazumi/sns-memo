@@ -32,18 +32,15 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import MemoCard from './MemoCard.vue'
+import type { Memo } from '../types'
 
-defineProps({
-  memos: {
-    type: Array,
-    required: true
-  },
-  searchQuery: {
-    type: String,
-    default: ''
-  }
+withDefaults(defineProps<{
+  memos: Memo[]
+  searchQuery?: string
+}>(), {
+  searchQuery: ''
 })
 </script>
 
