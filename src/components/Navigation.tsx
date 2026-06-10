@@ -62,14 +62,22 @@ const navItems = [
   { id: 'profile', label: 'プロフィール', Icon: ProfileIcon },
 ]
 
+function detectOS(): 'ios' | 'android' | 'desktop' {
+  const ua = navigator.userAgent
+  if (/android/i.test(ua)) return 'android'
+  if (/iphone|ipad|ipod/i.test(ua)) return 'ios'
+  return 'desktop'
+}
+
 export default function Navigation({ currentPage, onNavigate }: Props) {
   const { isDarkMode, toggleDarkMode } = useDarkMode()
   const ThemeIcon = isDarkMode ? MoonIcon : SunIcon
   const themeLabel = isDarkMode ? 'ダーク' : 'ライト'
+  const os = detectOS()
 
   return (
     <>
-      {/* PC sidebar */}
+      {/* Desktop sidebar */}
       <nav className="nav-sidebar">
         <ul className="nav-list">
           {navItems.map(({ id, label, Icon }) => (
@@ -93,33 +101,210 @@ export default function Navigation({ currentPage, onNavigate }: Props) {
         </button>
       </nav>
 
-      {/* Mobile bottom nav */}
-      <nav className="nav-bottom">
-        <ul className="nav-bottom-list">
-          {navItems.map(({ id, label, Icon }) => (
+      {/* iOS-style bottom tab bar */}
+      {os === 'ios' && (
+        <nav className="nav-bottom nav-ios">
+          <ul className="nav-bottom-list">
+            {navItems.map(({ id, label, Icon }) => (
+              <li
+                key={id}
+                className={`nav-bottom-item${currentPage === id ? ' active' : ''}`}
+                onClick={() => onNavigate(id)}
+              >
+                <Icon />
+                <span className="nav-bottom-label">{label}</span>
+              </li>
+            ))}
             <li
-              key={id}
-              className={`nav-bottom-item${currentPage === id ? ' active' : ''}`}
-              onClick={() => onNavigate(id)}
+              className="nav-bottom-item"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
             >
-              <Icon />
-              <span className="nav-bottom-label">{label}</span>
+              <ThemeIcon />
+              <span className="nav-bottom-label">{themeLabel}</span>
             </li>
-          ))}
-          <li
-            className="nav-bottom-item"
-            onClick={toggleDarkMode}
-            title={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
-          >
-            <ThemeIcon />
-            <span className="nav-bottom-label">{themeLabel}</span>
-          </li>
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      )}
+
+      {/* Android Material Design 3 bottom navigation */}
+      {os === 'android' && (
+        <nav className="nav-bottom nav-android">
+          <ul className="nav-bottom-list">
+            {navItems.map(({ id, label, Icon }) => (
+              <li
+                key={id}
+                className={`nav-bottom-item${currentPage === id ? ' active' : ''}`}
+                onClick={() => onNavigate(id)}
+              >
+                <span className="md3-indicator">
+                  <Icon />
+                </span>
+                <span className="nav-bottom-label">{label}</span>
+              </li>
+            ))}
+            <li
+              className="nav-bottom-item"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+            >
+              <span className="md3-indicator">
+                <ThemeIcon />
+              </span>
+              <span className="nav-bottom-label">{themeLabel}</span>
+            </li>
+          </ul>
+        </nav>
+      )}
+
+      {/* Fallback bottom nav for non-iOS/Android mobile */}
+      {os === 'desktop' && (
+        <nav className="nav-bottom nav-mobile-fallback">
+          <ul className="nav-bottom-list">
+            {navItems.map(({ id, label, Icon }) => (
+              <li
+                key={id}
+                className={`nav-bottom-item${currentPage === id ? ' active' : ''}`}
+                onClick={() => onNavigate(id)}
+              >
+                <Icon />
+                <span className="nav-bottom-label">{label}</span>
+              </li>
+            ))}
+            <li
+              className="nav-bottom-item"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+            >
+              <ThemeIcon />
+              <span className="nav-bottom-label">{themeLabel}</span>
+            </li>
+          </ul>
+        </nav>
+      )}
 
       <style>{`
+        /* ===== Common ===== */
         .nav-sidebar { display: none; }
-        .nav-bottom {
+        .nav-icon { width: 24px; height: 24px; }
+
+        /* ===== iOS Tab Bar (Human Interface Guidelines) ===== */
+        .nav-ios {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 200;
+          /* iOS frosted glass effect */
+          background-color: ${isDarkMode
+            ? 'rgba(28, 28, 30, 0.85)'
+            : 'rgba(249, 249, 249, 0.85)'};
+          backdrop-filter: saturate(180%) blur(20px);
+          -webkit-backdrop-filter: saturate(180%) blur(20px);
+          border-top: 0.5px solid ${isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'};
+          padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .nav-ios .nav-bottom-list {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .nav-ios .nav-bottom-item {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+          padding: 6px 4px 4px;
+          cursor: pointer;
+          color: ${isDarkMode ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)'};
+          transition: color 0.15s;
+          background: none;
+          border: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .nav-ios .nav-bottom-item:active {
+          opacity: 0.6;
+        }
+        .nav-ios .nav-bottom-item.active {
+          /* iOS uses the system blue tint for active tab */
+          color: #007AFF;
+        }
+        .nav-ios .nav-bottom-label {
+          font-size: 10px;
+          font-weight: 500;
+          font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          letter-spacing: 0;
+        }
+        .nav-ios .nav-icon { width: 26px; height: 26px; }
+
+        /* ===== Android Material Design 3 Bottom Navigation ===== */
+        .nav-android {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 200;
+          background-color: ${isDarkMode ? '#1C1B1F' : '#FFFBFE'};
+          border-top: 1px solid ${isDarkMode ? '#49454F' : '#CAC4D0'};
+          padding-bottom: env(safe-area-inset-bottom, 0);
+          /* MD3 elevation */
+          box-shadow: 0px -1px 3px 1px rgba(0,0,0,0.15), 0px -1px 2px rgba(0,0,0,0.30);
+        }
+        .nav-android .nav-bottom-list {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          height: 80px;
+        }
+        .nav-android .nav-bottom-item {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          padding: 0 4px;
+          cursor: pointer;
+          color: ${isDarkMode ? '#CAC4D0' : '#49454F'};
+          transition: color 0.2s;
+          background: none;
+          border: none;
+          -webkit-tap-highlight-color: transparent;
+          position: relative;
+        }
+        /* MD3 pill-shaped active indicator */
+        .nav-android .md3-indicator {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 64px;
+          height: 32px;
+          border-radius: 16px;
+          transition: background-color 0.2s;
+        }
+        .nav-android .nav-bottom-item.active .md3-indicator {
+          background-color: ${isDarkMode ? '#4A4458' : '#E8DEF8'};
+        }
+        .nav-android .nav-bottom-item.active {
+          color: ${isDarkMode ? '#D0BCFF' : '#6750A4'};
+        }
+        .nav-android .nav-bottom-item:active .md3-indicator {
+          background-color: ${isDarkMode ? 'rgba(208,188,255,0.12)' : 'rgba(103,80,164,0.12)'};
+        }
+        .nav-android .nav-bottom-label {
+          font-size: 12px;
+          font-weight: 500;
+          font-family: 'Google Sans', Roboto, sans-serif;
+          letter-spacing: 0.5px;
+        }
+        .nav-android .nav-icon { width: 24px; height: 24px; }
+
+        /* ===== Desktop fallback (shown on mobile when not iOS/Android) ===== */
+        .nav-mobile-fallback {
           position: fixed;
           bottom: 0;
           left: 0;
@@ -129,8 +314,13 @@ export default function Navigation({ currentPage, onNavigate }: Props) {
           z-index: 200;
           padding-bottom: env(safe-area-inset-bottom, 0);
         }
-        .nav-bottom-list { display: flex; list-style: none; margin: 0; padding: 0; }
-        .nav-bottom-item {
+        .nav-mobile-fallback .nav-bottom-list {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .nav-mobile-fallback .nav-bottom-item {
           flex: 1;
           display: flex;
           flex-direction: column;
@@ -141,14 +331,14 @@ export default function Navigation({ currentPage, onNavigate }: Props) {
           cursor: pointer;
           color: var(--text-secondary);
           transition: color 0.2s;
-          border-radius: 0;
           background: none;
           border: none;
         }
-        .nav-bottom-item:hover { color: #1da1f2; }
-        .nav-bottom-item.active { color: #1da1f2; }
-        .nav-bottom-label { font-size: 10px; font-weight: 600; }
-        .nav-icon { width: 24px; height: 24px; }
+        .nav-mobile-fallback .nav-bottom-item:hover { color: #1da1f2; }
+        .nav-mobile-fallback .nav-bottom-item.active { color: #1da1f2; }
+        .nav-mobile-fallback .nav-bottom-label { font-size: 10px; font-weight: 600; }
+
+        /* ===== Desktop sidebar (≥768px) ===== */
         @media (min-width: 768px) {
           .nav-sidebar {
             display: flex;
@@ -164,7 +354,7 @@ export default function Navigation({ currentPage, onNavigate }: Props) {
             background-color: var(--bg-primary);
             overflow-y: auto;
           }
-          .nav-bottom { display: none; }
+          .nav-bottom { display: none !important; }
           .nav-list {
             list-style: none;
             padding: 0;
