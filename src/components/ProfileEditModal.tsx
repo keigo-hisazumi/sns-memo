@@ -1,0 +1,243 @@
+import { useState } from 'react'
+import { useProfile } from '../context/ProfileContext'
+import UserAvatar from './UserAvatar'
+
+const AVATAR_COLORS = [
+  '#1da1f2', '#e0245e', '#17bf63', '#f4900c',
+  '#794bc4', '#ff7043', '#00b8d4', '#546e7a'
+]
+
+interface Props {
+  onClose: () => void
+}
+
+export default function ProfileEditModal({ onClose }: Props) {
+  const { profile, updateProfile } = useProfile()
+  const [name, setName] = useState(profile.name)
+  const [userId, setUserId] = useState(profile.userId)
+  const [bio, setBio] = useState(profile.bio)
+  const [avatarColor, setAvatarColor] = useState(profile.avatarColor)
+
+  const sanitizeUserId = (val: string) => val.replace(/[^a-zA-Z0-9_]/g, '')
+
+  const save = () => {
+    if (!name.trim()) return
+    updateProfile({
+      name: name.trim(),
+      userId: userId.trim() || 'user',
+      bio: bio.trim(),
+      avatarColor
+    })
+    onClose()
+  }
+
+  return (
+    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="modal">
+        <div className="modal-header">
+          <button className="close-button" onClick={onClose}>
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+          <h2 className="modal-title">プロフィール編集</h2>
+          <button className="save-button" disabled={!name.trim()} onClick={save}>保存</button>
+        </div>
+
+        <div className="modal-body">
+          <div className="avatar-section">
+            <UserAvatar name={name || '?'} color={avatarColor} size={72} />
+            <div className="color-picker">
+              <p className="color-label">アイコンカラー</p>
+              <div className="color-swatches">
+                {AVATAR_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    className={`color-swatch${avatarColor === color ? ' selected' : ''}`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                    onClick={() => setAvatarColor(color)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="field-label">名前 <span className="required">*</span></label>
+            <input
+              type="text"
+              maxLength={50}
+              placeholder="あなたの名前"
+              className="field-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <span className={`field-count${name.length >= 45 ? ' warn' : ''}`}>{name.length} / 50</span>
+          </div>
+
+          <div className="form-group">
+            <label className="field-label">ユーザーID</label>
+            <div className="id-input-wrap">
+              <span className="at-sign">@</span>
+              <input
+                type="text"
+                maxLength={20}
+                placeholder="user_id"
+                className="field-input id-input"
+                value={userId}
+                onChange={(e) => setUserId(sanitizeUserId(e.target.value))}
+              />
+            </div>
+            <span className={`field-count${userId.length >= 18 ? ' warn' : ''}`}>{userId.length} / 20</span>
+          </div>
+
+          <div className="form-group">
+            <label className="field-label">自己紹介</label>
+            <textarea
+              maxLength={160}
+              placeholder="自己紹介を書いてください"
+              className="field-input bio-input"
+              rows={4}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+            />
+            <span className={`field-count${bio.length >= 140 ? ' warn' : ''}`}>{bio.length} / 160</span>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          z-index: 200;
+          padding: 40px 16px;
+        }
+        .modal {
+          background: var(--bg-primary);
+          border-radius: 16px;
+          width: 100%;
+          max-width: 560px;
+          max-height: calc(100vh - 80px);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          border-bottom: 1px solid var(--border-color);
+          flex-shrink: 0;
+        }
+        .modal-title {
+          font-size: 17px;
+          font-weight: 700;
+          color: var(--text-primary);
+          flex: 1;
+          text-align: center;
+          margin: 0 8px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .close-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: none;
+          color: var(--text-primary);
+          width: 34px;
+          height: 34px;
+          padding: 0;
+          border-radius: 50%;
+          border: none;
+        }
+        .close-button:hover { background-color: rgba(0, 0, 0, 0.07); }
+        html.dark-mode .close-button:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .save-button {
+          background-color: #14171a;
+          color: white;
+          padding: 6px 20px;
+          font-size: 14px;
+          border-radius: 9999px;
+        }
+        html.dark-mode .save-button { background-color: #f7f9fa; color: #14171a; }
+        .save-button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .save-button:not(:disabled):hover { background-color: #2d3748; }
+        html.dark-mode .save-button:not(:disabled):hover { background-color: #e1e8ed; }
+        .modal-body {
+          padding: 24px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          overflow-y: auto;
+        }
+        .avatar-section { display: flex; align-items: center; gap: 20px; }
+        .color-picker { flex: 1; }
+        .color-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
+        .color-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+        .color-swatch {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          border: 3px solid transparent;
+          padding: 0;
+          transition: transform 0.15s, border-color 0.15s;
+          background: none;
+        }
+        .color-swatch:hover { transform: scale(1.15); opacity: 1; }
+        .color-swatch.selected { border-color: var(--text-primary); transform: scale(1.1); }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .field-label { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+        .required { color: #e0245e; }
+        .field-input {
+          width: 100%;
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          padding: 10px 12px;
+          font-size: 16px;
+          font-family: inherit;
+          transition: border-color 0.2s;
+          background-color: var(--bg-primary);
+          color: var(--text-primary);
+        }
+        .field-input:focus { outline: none; border-color: #1da1f2; }
+        .bio-input { resize: vertical; min-height: 80px; }
+        .id-input-wrap {
+          display: flex;
+          align-items: center;
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          overflow: hidden;
+          transition: border-color 0.2s;
+        }
+        .id-input-wrap:focus-within { border-color: #1da1f2; }
+        .at-sign {
+          padding: 10px 8px 10px 12px;
+          color: var(--text-secondary);
+          font-size: 15px;
+          background-color: var(--bg-secondary);
+          border-right: 1px solid var(--border-color);
+        }
+        .id-input { border: none; border-radius: 0; flex: 1; background-color: transparent; }
+        .id-input:focus { border: none; outline: none; }
+        .field-count { font-size: 12px; color: var(--text-secondary); text-align: right; }
+        .field-count.warn { color: #f4900c; font-weight: 600; }
+        @media (max-width: 600px) {
+          .modal-overlay { padding: 0; align-items: stretch; }
+          .modal { max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+          .modal-body { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+          .avatar-section { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .save-button { padding: 6px 14px; }
+        }
+      `}</style>
+    </div>
+  )
+}
