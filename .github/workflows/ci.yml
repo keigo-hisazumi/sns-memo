@@ -1,0 +1,51 @@
+# CI ワークフロー
+#
+# template リポジトリの CI と同じ構成（lint → type-check / test → build）で、
+# このリポジトリの package.json にあるスクリプトだけを実行します。
+
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Node.js のセットアップ
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: 依存関係のインストール
+        run: npm ci
+      - name: 型チェック
+        run: npm run typecheck
+
+  build:
+    name: Build
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Node.js のセットアップ
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: 依存関係のインストール
+        run: npm ci
+      - name: ビルド
+        run: npm run build
+        env:
+          NODE_ENV: production
