@@ -35,10 +35,7 @@ export function MemosProvider({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    if (!currentUser) {
-      setMemos([])
-      return
-    }
+    if (!currentUser) return
     const q = query(collection(db, 'memos'), where('uid', '==', currentUser.uid))
     const unsub = onSnapshot(q, (snapshot) => {
       setMemos(snapshot.docs.map((d): Memo => {
@@ -57,7 +54,11 @@ export function MemosProvider({ children }: { children: ReactNode }) {
     }, (error) => {
       console.error('Firestore snapshot error:', error)
     })
-    return unsub
+    return () => {
+      unsub()
+      // ログアウト・ユーザー切り替え時に前のユーザーのメモを残さない
+      setMemos([])
+    }
   }, [currentUser])
 
   const allMemos = useMemo(() =>
