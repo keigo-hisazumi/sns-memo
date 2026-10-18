@@ -44,7 +44,7 @@ npm install
 npm run dev
 ```
 
-ブラウザで http://localhost:3000 を開いてアプリケーションにアクセスできます。
+ブラウザで <http://localhost:3000> を開いてアプリケーションにアクセスできます。
 
 ### プロダクションビルド
 
@@ -70,7 +70,7 @@ npm run preview
 
 ## プロジェクト構造
 
-```
+```text
 sns-memo/
 ├── index.html              # エントリーポイント
 ├── package.json            # プロジェクト設定
