@@ -1,14 +1,15 @@
 # SNS Memo
 
-Twitter 風のデザインで気軽にメモを投稿・管理できる SNS 風メモアプリです。メールアドレスでログインすると、メモとプロフィールが Firebase（Firestore）に保存されます。
+Twitter 風のデザインでメモを投稿し、リプライ・いいね・ピン留めもできる SNS 風のメモアプリです。
 
-公開 URL: <https://keigo-hisazumi.github.io/sns-memo/>
+**公開 URL**: <https://keigo-hisazumi.github.io/sns-memo/>
 
 ![SNS Memo アプリのスクリーンショット](https://github.com/user-attachments/assets/c64d186f-4a46-47ec-a7b4-bbff64adf1b8)
 
 ## 主な機能
 
 - メールアドレス / パスワードによるユーザー登録とログイン
+- メモとプロフィールを Firebase（Firestore）に保存
 - 280 文字までのメモの投稿（文字数カウンター付き）
 - メモの編集・削除（削除するとそのメモへのリプライもまとめて削除）
 - メモへのリプライ（スレッド表示）
